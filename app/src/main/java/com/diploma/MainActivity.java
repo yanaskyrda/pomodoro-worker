@@ -1,7 +1,11 @@
 package com.diploma;
 
+import static com.diploma.spotify.SpotifyLoginActivity.CLIENT_ID;
+import static com.diploma.spotify.SpotifyLoginActivity.REDIRECT_URI;
+
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -9,6 +13,10 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
+import com.spotify.android.appremote.api.ConnectionParams;
+import com.spotify.android.appremote.api.Connector;
+import com.spotify.android.appremote.api.SpotifyAppRemote;
+import com.spotify.protocol.types.Track;
 
 import java.util.ArrayList;
 
@@ -19,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
 
     //spotify section
     private TextView userView;
+
+    private SpotifyAppRemote spotifyAppRemote;
 
     //end spotify section
 
@@ -51,5 +61,54 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
         userView.setText(sharedPreferences.getString("userid", "No User"));
+
+        startWidget();
+    }
+
+    protected void startWidget() {
+
+        //todo move to method
+        ConnectionParams connectionParams =
+                new ConnectionParams.Builder(CLIENT_ID)
+                        .setRedirectUri(REDIRECT_URI)
+                        .showAuthView(true)
+                        .build();
+
+
+        SpotifyAppRemote.connect(this, connectionParams,
+                new Connector.ConnectionListener() {
+
+                    public void onConnected(SpotifyAppRemote receivedSpotifyAppRemote) {
+                        spotifyAppRemote = receivedSpotifyAppRemote;
+                        Log.d("Spotify remote app", "Connected successfully.");
+
+                        playPlaylist();
+
+                    }
+
+                    public void onFailure(Throwable throwable) {
+                        Log.e("Spotify remote app", throwable.getMessage(), throwable);
+                    }
+                });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        SpotifyAppRemote.disconnect(spotifyAppRemote);
+    }
+
+    private void playPlaylist() {
+        spotifyAppRemote.getPlayerApi().play("spotify:playlist:37i9dQZF1EQqkOPvHGajmW");
+
+        // Subscribe to PlayerState
+        spotifyAppRemote.getPlayerApi()
+                .subscribeToPlayerState()
+                .setEventCallback(playerState -> {
+                    final Track track = playerState.track;
+                    if (track != null) {
+                        Log.d("MainActivity", track.name + " by " + track.artist.name);
+                    }
+                });
     }
 }

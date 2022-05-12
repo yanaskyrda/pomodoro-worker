@@ -25,17 +25,18 @@ public class SpotifyLoginActivity extends AppCompatActivity {
     private RequestQueue queue;
 
     private static final int REQUEST_CODE = 1010;
-    private final static String REDIRECT_URI = "https://pomodoroworker.com/callback";
-    private final static String CLIENT_ID = "06e368bd1524482097455539dc4ec4ed";
+    public final static String REDIRECT_URI = "https://pomodoroworker.com/callback";
+    public final static String CLIENT_ID = "06e368bd1524482097455539dc4ec4ed";
     private final static String SCOPES =
                     "user-read-recently-played," +
                     "user-library-modify," +
                     "user-read-email," +
-                    "user-read-private, " +
-                    "streaming, " +
-                    "playlist-read, " +
-                    "playlist-read-private, " +
-                    "user-read-private";
+                    "user-read-private," +
+                    "streaming," +
+                    "playlist-read," +
+                    "playlist-read-private," +
+                    "user-read-private," +
+                    "app-remote-control";
 
 
     @Override
