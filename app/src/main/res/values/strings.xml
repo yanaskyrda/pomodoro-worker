@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Pomodoro worker</string>
+    <string name="play_button">Play</string>
+    <string name="videoId">Enter Youtube video Id</string>
+</resources>
