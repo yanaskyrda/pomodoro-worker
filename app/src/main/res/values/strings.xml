@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">Pomodoro worker</string>
     <string name="play_button">Play</string>
-    <string name="videoId">Enter Youtube video Id</string>
+    <string name="video_id">Enter Youtube video Id</string>
     <string name="Video">Video</string>
     <string name="Music">Music</string>
     <string name="Main">Main</string>
+    <string name="current_song_title">%1$s - %2$s</string>
 
     <string-array name="tab_titles">
         <item>@string/Video</item>

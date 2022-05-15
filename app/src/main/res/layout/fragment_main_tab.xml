@@ -28,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:hint="@string/videoId"
+        android:hint="@string/video_id"
         android:lines="1"
         app:layout_constraintTop_toBottomOf="@id/activity_main_youtubePlayerView" />
 
@@ -42,7 +42,6 @@
 
     <TextView
         android:id="@+id/currentSong"
-        android:text="Saint Motel - A Good Song Never Dies"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/user"
