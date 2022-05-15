@@ -5,4 +5,10 @@
     <string name="Video">Video</string>
     <string name="Music">Music</string>
     <string name="Main">Main</string>
+
+    <string-array name="tab_titles">
+        <item>@string/Video</item>
+        <item>@string/Main</item>
+        <item>@string/Music</item>
+    </string-array>
 </resources>

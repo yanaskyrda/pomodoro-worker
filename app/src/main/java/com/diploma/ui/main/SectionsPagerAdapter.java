@@ -1,47 +1,47 @@
 package com.diploma.ui.main;
 
-import android.content.Context;
+import android.content.res.Resources;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.diploma.R;
 
-/**
- * A [FragmentPagerAdapter] that returns a fragment corresponding to
- * one of the sections/tabs/pages.
- */
-public class SectionsPagerAdapter extends FragmentPagerAdapter {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-//    @StringRes
-//    private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2};
-    private final Context mContext;
+public class SectionsPagerAdapter extends FragmentStateAdapter {
 
-    public SectionsPagerAdapter(Context context, FragmentManager fm) {
-        super(fm);
-        mContext = context;
+    private List<Fragment> tabFragments;
+    private final List<String> tabTitles = new ArrayList<>();
+
+    public SectionsPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
+        super(fragmentActivity);
+    }
+
+    @NonNull
+    @Override
+    public Fragment createFragment(int position) {
+        return tabFragments.get(position);
     }
 
     @Override
-    public Fragment getItem(int position) {
-        // getItem is called to instantiate the fragment for the given page.
-        // Return a PlaceholderFragment (defined as a static inner class below).
-        return PlaceholderFragment.newInstance(position + 1);
+    public int getItemCount() {
+        return tabFragments.size();
     }
 
-    @Nullable
-    @Override
-    public CharSequence getPageTitle(int position) {
-//        return mContext.getResources().getString(TAB_TITLES[position]);
-        return null;
+    public void setTabFragments(List<Fragment> tabFragments) {
+        this.tabFragments = tabFragments;
+        tabTitles.clear();
+        if (tabFragments != null && !tabFragments.isEmpty()) {
+            tabTitles.addAll(Arrays.asList(Resources.getSystem().getStringArray(R.array.tab_titles)));
+        }
     }
 
-    @Override
-    public int getCount() {
-        // Show 2 total pages.
-        return 2;
+    public List<String> getTabTitles() {
+        return tabTitles;
     }
 }
