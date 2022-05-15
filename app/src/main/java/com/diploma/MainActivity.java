@@ -6,19 +6,20 @@ import static com.diploma.spotify.SpotifyLoginActivity.REDIRECT_URI;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager2.widget.ViewPager2;
 
+import com.diploma.databinding.ActivityMainBinding;
+import com.diploma.ui.main.SectionsPagerAdapter;
+import com.google.android.material.tabs.TabLayout;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.protocol.types.Track;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     //youtube section
@@ -32,10 +33,21 @@ public class MainActivity extends AppCompatActivity {
 
     //end spotify section
 
+    private ActivityMainBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+//        ViewPager2 viewPager = binding.viewPager;
+//        viewPager.setAdapter(sectionsPagerAdapter);
+//        TabLayout tabs = binding.tabs;
+//        tabs.setupWithViewPager(viewPager);
 
         runYoutube();
         runSpotify();
@@ -44,16 +56,16 @@ public class MainActivity extends AppCompatActivity {
     //todo rename
     private void runYoutube() {
         final EditText editTextId = findViewById(R.id.editTextId);
-        Button buttonPlay = findViewById(R.id.buttonPlay);
+//        Button buttonPlay = findViewById(R.id.buttonPlay);
 
         youTubePlayerView = findViewById(R.id.activity_main_youtubePlayerView);
         getLifecycle().addObserver(youTubePlayerView);
 
 
-        buttonPlay.setOnClickListener(view -> {
+        //buttonPlay.setOnClickListener(view -> {
             String videoId = editTextId.getText().toString();
             youTubePlayerView.getYouTubePlayerWhenReady(youTubePlayer -> youTubePlayer.cueVideo(videoId, 0));
-        });
+        //});
     }
 
     private void runSpotify() {
