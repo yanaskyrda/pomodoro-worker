@@ -18,8 +18,8 @@ public class MainActivity extends AppCompatActivity
         implements TabLayoutMediator.TabConfigurationStrategy {
 
     private ViewPager2 viewPager2;
-    private TabLayout tabLayout;
     private final List<String> tabsTitles = new ArrayList<>();
+    private static final int MAIN_PAGE_INDEX = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,10 +28,9 @@ public class MainActivity extends AppCompatActivity
 
         viewPager2 = findViewById(R.id.viewPager);
         setViewPagerAdapter();
-        //set default page Main
-        viewPager2.setCurrentItem(1);
+        viewPager2.setCurrentItem(MAIN_PAGE_INDEX);
 
-        tabLayout = findViewById(R.id.tabLayout);
+        TabLayout tabLayout = findViewById(R.id.tabLayout);
 
         new TabLayoutMediator(tabLayout, viewPager2, this).attach();
     }

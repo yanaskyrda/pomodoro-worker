@@ -33,8 +33,6 @@ public class MainTabFragment extends Fragment {
     private YouTubePlayerView youtubePlayerView;
     //end youtube section
 
-    //spotify section
-    private TextView userView;
     private SpotifyAppRemote spotifyAppRemote;
     //end spotify section
 
@@ -69,7 +67,7 @@ public class MainTabFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         runYoutube(view);
-        runSpotify(view);
+//        runSpotify(view);
     }
 
     //todo rename
@@ -88,7 +86,7 @@ public class MainTabFragment extends Fragment {
     }
 
     private void runSpotify(@NonNull View view) {
-        userView = view.findViewById(R.id.user);
+        TextView userView = view.findViewById(R.id.user);
 
         SharedPreferences sharedPreferences = this.requireActivity()
                 .getSharedPreferences("SPOTIFY", 0);
@@ -97,9 +95,8 @@ public class MainTabFragment extends Fragment {
         startWidget();
     }
 
+    //TODO RENAME
     protected void startWidget() {
-
-        //todo move to method
         ConnectionParams connectionParams =
                 new ConnectionParams.Builder(CLIENT_ID)
                         .setRedirectUri(REDIRECT_URI)

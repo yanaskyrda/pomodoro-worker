@@ -37,7 +37,11 @@ public class SectionsPagerAdapter extends FragmentStateAdapter {
         this.tabFragments = tabFragments;
         tabTitles.clear();
         if (tabFragments != null && !tabFragments.isEmpty()) {
-            tabTitles.addAll(Arrays.asList(Resources.getSystem().getStringArray(R.array.tab_titles)));
+            //todo fix this stupid sh.stuff
+            //tabTitles.addAll(Arrays.asList(Resources.getSystem().getStringArray(R.array.tab_titles)));
+            tabTitles.add("Video");
+            tabTitles.add("Main");
+            tabTitles.add("Music");
         }
     }
 
