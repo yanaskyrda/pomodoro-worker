@@ -3,12 +3,14 @@ package com.diploma;
 import static com.diploma.spotify.SpotifyLoginActivity.CLIENT_ID;
 import static com.diploma.spotify.SpotifyLoginActivity.REDIRECT_URI;
 
+import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -38,6 +40,9 @@ public class MainTabFragment extends Fragment {
     private SpotifyAppRemote spotifyAppRemote;
     private SpotifyPlayerState spotifyPlayerState = SpotifyPlayerState.UNKNOWN;
     //end spotify section
+
+    private AlertDialog.Builder dialogBuilder;
+    private AlertDialog videosDialog;
 
     public MainTabFragment() {
         // Required empty public constructor
@@ -79,11 +84,14 @@ public class MainTabFragment extends Fragment {
         playSongButton.setOnClickListener(v -> pauseOrResumeSpotifyPlayer(view, playSongButton));
         playNextSongButton.setOnClickListener(this::skipToNextSong);
         playPreviousSongButton.setOnClickListener(this::skipToPreviousSong);
+
+        final Button openVideosChooser = view.findViewById(R.id.videoPlaylistButton);
+        openVideosChooser.setOnClickListener(this::createNewVideosDialog);
     }
 
     //todo rename
     private void connectYoutube(@NonNull View view) {
-        final EditText editTextId = view.findViewById(R.id.editTextId);
+//        final EditText editTextId = view.findViewById(R.id.editTextId);
 //        Button buttonPlay = findViewById(R.id.buttonPlay);
 
         youtubePlayerView = view.findViewById(R.id.activity_main_youtubePlayerView);
@@ -91,17 +99,17 @@ public class MainTabFragment extends Fragment {
 
 
         //buttonPlay.setOnClickListener(view -> {
-        String videoId = editTextId.getText().toString();
-        youtubePlayerView.getYouTubePlayerWhenReady(youTubePlayer -> youTubePlayer.cueVideo(videoId, 0));
+//        String videoId = editTextId.getText().toString();
+//        youtubePlayerView.getYouTubePlayerWhenReady(youTubePlayer -> youTubePlayer.cueVideo(videoId, 0));
         //});
     }
 
     private void connectSpotify(@NonNull View view) {
-        TextView userView = view.findViewById(R.id.user);
+//        TextView userView = view.findViewById(R.id.user);
 
         SharedPreferences sharedPreferences = this.requireActivity()
                 .getSharedPreferences("SPOTIFY", 0);
-        userView.setText(sharedPreferences.getString("userid", "No User"));
+//        userView.setText(sharedPreferences.getString("userid", "No User"));
 
         connectSpotifyRemoteApp();
     }
@@ -208,5 +216,25 @@ public class MainTabFragment extends Fragment {
                 return;
         }
         setTrackTitle(view);
+    }
+
+    public void createNewVideosDialog(View view) {
+        dialogBuilder = new AlertDialog.Builder(view.getContext());
+        final View videoChooserPopup = getLayoutInflater().inflate(R.layout.video_chooser_popup, null);
+
+        final EditText editTextId = videoChooserPopup.findViewById(R.id.youtube_video_input);
+        final Button closeButton = videoChooserPopup.findViewById(R.id.close_video_chooser);
+        youtubePlayerView = view.getRootView().findViewById(R.id.activity_main_youtubePlayerView);
+        //getLifecycle().addObserver(youtubePlayerView);
+
+        dialogBuilder.setView(videoChooserPopup);
+        videosDialog = dialogBuilder.create();
+        videosDialog.show();
+
+        closeButton.setOnClickListener(v -> {
+            String videoId = editTextId.getText().toString();
+            youtubePlayerView.getYouTubePlayerWhenReady(youTubePlayer -> youTubePlayer.cueVideo(videoId, 0));
+            videosDialog.dismiss();
+        });
     }
 }
