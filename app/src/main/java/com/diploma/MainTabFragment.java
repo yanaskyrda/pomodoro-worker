@@ -17,13 +17,18 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.diploma.spotify.SpotifyPlayerState;
+import com.diploma.timer.SessionOptionsAdapter;
+import com.diploma.timer.SessionsSettingsService;
 import com.diploma.timer.TimerService;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
+import com.spotify.protocol.types.Image;
 import com.spotify.protocol.types.Track;
 
 /**
@@ -43,9 +48,10 @@ public class MainTabFragment extends Fragment {
     //end spotify section
 
     private AlertDialog.Builder dialogBuilder;
-    private AlertDialog videosDialog;
+    private AlertDialog sessionSettingDialog;
 
     private TimerService timerService;
+    private SessionsSettingsService sessionsSettingsService;
 
     public MainTabFragment() {
         // Required empty public constructor
@@ -80,9 +86,9 @@ public class MainTabFragment extends Fragment {
         connectYoutube(view);
 
         //spotify
-        ImageButton playSongButton = view.findViewById(R.id.playSongButton);
-        ImageButton playPreviousSongButton = view.findViewById(R.id.previousSongButton);
-        ImageButton playNextSongButton = view.findViewById(R.id.nextSongButton);
+        ImageButton playSongButton = view.findViewById(R.id.play_song_button);
+        ImageButton playPreviousSongButton = view.findViewById(R.id.previous_song_button);
+        ImageButton playNextSongButton = view.findViewById(R.id.next_song_button);
 
         connectSpotify(view);
         playSongButton.setOnClickListener(v -> pauseOrResumeSpotifyPlayer(view, playSongButton));
@@ -94,8 +100,13 @@ public class MainTabFragment extends Fragment {
         timerService = TimerService.getInstance(view);
         //timer
 
-        final Button openVideosChooser = view.findViewById(R.id.videoPlaylistButton);
+        sessionsSettingsService = SessionsSettingsService.getInstance();
+
+        final Button openVideosChooser = view.findViewById(R.id.video_playlist_button);
         openVideosChooser.setOnClickListener(this::createNewVideosDialog);
+
+        final ImageButton openSessionSetting = view.findViewById(R.id.sessions_settings_button);
+        openSessionSetting.setOnClickListener(this::createNewSessionSettingsDialog);
     }
 
     //todo rename
@@ -165,7 +176,7 @@ public class MainTabFragment extends Fragment {
                 .setEventCallback(playerState -> {
                     final Track track = playerState.track;
                     if (track != null) {
-                        TextView currentSongTitle = view.findViewById(R.id.currentSong);
+                        TextView currentSongTitle = view.findViewById(R.id.current_song);
                         String songTitlePlaceholder = view.getResources()
                                 .getString(R.string.current_song_title);
                         currentSongTitle.setText(String.format(songTitlePlaceholder,
@@ -229,21 +240,39 @@ public class MainTabFragment extends Fragment {
 
     public void createNewVideosDialog(View view) {
         dialogBuilder = new AlertDialog.Builder(view.getContext());
-        final View videoChooserPopup = getLayoutInflater().inflate(R.layout.video_chooser_popup, null);
+        final View videoChooserView = getLayoutInflater().inflate(R.layout.video_chooser_popup, null);
 
-        final EditText editTextId = videoChooserPopup.findViewById(R.id.youtube_video_input);
-        final Button closeButton = videoChooserPopup.findViewById(R.id.close_video_chooser);
+        final EditText editTextId = videoChooserView.findViewById(R.id.youtube_video_input);
+        final Button closeButton = videoChooserView.findViewById(R.id.close_video_chooser);
         youtubePlayerView = view.getRootView()  .findViewById(R.id.activity_main_youtubePlayerView);
         //getLifecycle().addObserver(youtubePlayerView);
 
-        dialogBuilder.setView(videoChooserPopup);
-        videosDialog = dialogBuilder.create();
-        videosDialog.show();
+        dialogBuilder.setView(videoChooserView);
+        sessionSettingDialog = dialogBuilder.create();
+        sessionSettingDialog.show();
 
         closeButton.setOnClickListener(v -> {
             String videoId = editTextId.getText().toString();
             youtubePlayerView.getYouTubePlayerWhenReady(youTubePlayer -> youTubePlayer.cueVideo(videoId, 0));
-            videosDialog.dismiss();
+            sessionSettingDialog.dismiss();
         });
+    }
+
+    public void createNewSessionSettingsDialog(View view) {
+        dialogBuilder = new AlertDialog.Builder(view.getContext());
+        final View sessionSettingsView = getLayoutInflater().inflate(R.layout.session_setting_popup, null);
+
+        final Button closeButton = sessionSettingsView.findViewById(R.id.close_session_setting);
+
+        dialogBuilder.setView(sessionSettingsView);
+        sessionSettingDialog = dialogBuilder.create();
+        sessionSettingDialog.show();
+
+        RecyclerView recyclerView = sessionSettingsView.findViewById(R.id.session_option_recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+        SessionOptionsAdapter adapter = new SessionOptionsAdapter(sessionsSettingsService);
+        recyclerView.setAdapter(adapter);
+
+        closeButton.setOnClickListener(v -> sessionSettingDialog.dismiss());
     }
 }

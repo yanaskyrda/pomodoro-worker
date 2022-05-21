@@ -34,10 +34,10 @@ public final class TimerService {
     private final String RESUME_SESSION = "RESUME SESSION";
 
     public void initViews(View view) {
-        progressBarCircle = view.findViewById(R.id.progressBarCircle);
-        textViewTime = view.findViewById(R.id.textViewTime);
-        startStopSessionButton = view.findViewById(R.id.startSessionButton);
-        resetButton = view.findViewById(R.id.resetTimerButton);
+        progressBarCircle = view.findViewById(R.id.progress_bar_circle);
+        textViewTime = view.findViewById(R.id.text_session_time);
+        startStopSessionButton = view.findViewById(R.id.start_session_button);
+        resetButton = view.findViewById(R.id.reset_timer_button);
 
         initListeners();
     }
