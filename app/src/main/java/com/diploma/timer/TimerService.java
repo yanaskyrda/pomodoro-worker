@@ -16,7 +16,8 @@ public final class TimerService {
     private static TimerService instance;
 
     private enum TimerStatus {
-        STARTED,
+        IN_PROCESS,
+        PAUSED,
         STOPPED
     }
 
@@ -30,6 +31,7 @@ public final class TimerService {
     private long timeCountInMilliSeconds = 60000;
     private final String START_SESSION = "START SESSION";
     private final String STOP_SESSION = "STOP SESSION";
+    private final String RESUME_SESSION = "RESUME SESSION";
 
     public void initViews(View view) {
         progressBarCircle = view.findViewById(R.id.progressBarCircle);
@@ -41,24 +43,34 @@ public final class TimerService {
     }
 
     public void initListeners() {
-        resetButton.setOnClickListener(v -> stopCountDownTimer());
+        resetButton.setOnClickListener(v -> reset());
         startStopSessionButton.setOnClickListener(v -> startStop());
     }
 
     private void startStop() {
-        if (timerStatus == TimerStatus.STOPPED) {
-            setTimerValues();
-            setProgressBarValues();
-            startStopSessionButton.setText(STOP_SESSION);
-            timerStatus = TimerStatus.STARTED;
-            startCountDownTimer();
-
-        } else {
-            startStopSessionButton.setText(START_SESSION);
-            timerStatus = TimerStatus.STOPPED;
-            stopCountDownTimer();
+        switch (timerStatus) {
+            //pause -> resume
+            case PAUSED:
+                setProgressBarValues();
+                startStopSessionButton.setText(STOP_SESSION);
+                timerStatus = TimerStatus.IN_PROCESS;
+                startCountDownTimer();
+                break;
+            //-> new start
+            case STOPPED:
+                setTimerValues();
+                setProgressBarValues();
+                startStopSessionButton.setText(STOP_SESSION);
+                timerStatus = TimerStatus.IN_PROCESS;
+                startCountDownTimer();
+                break;
+            //process -> pause
+            case IN_PROCESS:
+                startStopSessionButton.setText(RESUME_SESSION);
+                timerStatus = TimerStatus.PAUSED;
+                countDownTimer.cancel();
+                break;
         }
-
     }
 
     private void setTimerValues() {
@@ -87,12 +99,14 @@ public final class TimerService {
         countDownTimer.start();
     }
 
-    private void stopCountDownTimer() {
-        progressBarCircle.setProgress(progressBarCircle.getMax());
-        countDownTimer.cancel();
-        textViewTime.setText(hmsTimeFormatter(timeCountInMilliSeconds));
-        startStopSessionButton.setText(START_SESSION);
-        timerStatus = TimerStatus.STOPPED;
+    private void reset() {
+        if (progressBarCircle.getProgress() != progressBarCircle.getMax()) {
+            progressBarCircle.setProgress(progressBarCircle.getMax());
+            countDownTimer.cancel();
+            textViewTime.setText(hmsTimeFormatter(timeCountInMilliSeconds));
+            startStopSessionButton.setText(START_SESSION);
+            timerStatus = TimerStatus.STOPPED;
+        }
     }
 
     private void setProgressBarValues() {
