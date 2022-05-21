@@ -33,6 +33,10 @@ public final class TimerService {
     private final String STOP_SESSION = "STOP SESSION";
     private final String RESUME_SESSION = "RESUME SESSION";
 
+    private final SessionsSettingsService sessionsSettingsService;
+    private int currentRound = 1;
+    private boolean isBreak = false;
+
     public void initViews(View view) {
         progressBarCircle = view.findViewById(R.id.progress_bar_circle);
         textViewTime = view.findViewById(R.id.text_session_time);
@@ -58,7 +62,7 @@ public final class TimerService {
                 break;
             //-> new start
             case STOPPED:
-                setTimerValues();
+                setTimerValues(sessionsSettingsService.getActiveSetting().getFocusTime());
                 setProgressBarValues();
                 startStopSessionButton.setText(STOP_SESSION);
                 timerStatus = TimerStatus.IN_PROCESS;
@@ -73,10 +77,8 @@ public final class TimerService {
         }
     }
 
-    private void setTimerValues() {
-        int time;
-        time = Integer.parseInt("25");
-        timeCountInMilliSeconds = (long) time * 60 * 1000;
+    private void setTimerValues(int timeInMinutes) {
+        timeCountInMilliSeconds = (long) timeInMinutes * 5 * 1000;
     }
 
     private void startCountDownTimer() {
@@ -89,11 +91,30 @@ public final class TimerService {
 
             @Override
             public void onFinish() {
+                if (currentRound == sessionsSettingsService.getActiveSetting().getRoundsCount()) {
+                    startStopSessionButton.setText(START_SESSION);
+                    timerStatus = TimerStatus.STOPPED;
+                    textViewTime.setText(hmsTimeFormatter(timeCountInMilliSeconds));
+                    setProgressBarValues();
+                    return;
+                }
+
+                if (!isBreak) {
+                    if (currentRound % sessionsSettingsService.getActiveSetting().getBigBreakFrequency() == 0) {
+                        setTimerValues(sessionsSettingsService.getActiveSetting().getBigBreakTime());
+                    } else {
+                        setTimerValues(sessionsSettingsService.getActiveSetting().getBreakTime());
+                    }
+                    isBreak = true;
+                } else {
+                    setTimerValues(sessionsSettingsService.getActiveSetting().getFocusTime());
+                    isBreak = false;
+                    currentRound++;
+                }
+
                 textViewTime.setText(hmsTimeFormatter(timeCountInMilliSeconds));
                 setProgressBarValues();
-
-                startStopSessionButton.setText(START_SESSION);
-                timerStatus = TimerStatus.STOPPED;
+                startCountDownTimer();
             }
         };
         countDownTimer.start();
@@ -132,6 +153,7 @@ public final class TimerService {
 
     private TimerService(View view) {
         initViews(view);
+        sessionsSettingsService = SessionsSettingsService.getInstance();
     }
 
     public static TimerService getInstance(View view) {
