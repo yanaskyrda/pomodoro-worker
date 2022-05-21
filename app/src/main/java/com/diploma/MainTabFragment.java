@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.diploma.spotify.SpotifyPlayerState;
+import com.diploma.timer.TimerService;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
@@ -43,6 +44,8 @@ public class MainTabFragment extends Fragment {
 
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog videosDialog;
+
+    private TimerService timerService;
 
     public MainTabFragment() {
         // Required empty public constructor
@@ -76,6 +79,7 @@ public class MainTabFragment extends Fragment {
 
         connectYoutube(view);
 
+        //spotify
         ImageButton playSongButton = view.findViewById(R.id.playSongButton);
         ImageButton playPreviousSongButton = view.findViewById(R.id.previousSongButton);
         ImageButton playNextSongButton = view.findViewById(R.id.nextSongButton);
@@ -84,6 +88,11 @@ public class MainTabFragment extends Fragment {
         playSongButton.setOnClickListener(v -> pauseOrResumeSpotifyPlayer(view, playSongButton));
         playNextSongButton.setOnClickListener(this::skipToNextSong);
         playPreviousSongButton.setOnClickListener(this::skipToPreviousSong);
+        //spotify
+
+        //timer
+        timerService = TimerService.getInstance(view);
+        //timer
 
         final Button openVideosChooser = view.findViewById(R.id.videoPlaylistButton);
         openVideosChooser.setOnClickListener(this::createNewVideosDialog);
@@ -224,7 +233,7 @@ public class MainTabFragment extends Fragment {
 
         final EditText editTextId = videoChooserPopup.findViewById(R.id.youtube_video_input);
         final Button closeButton = videoChooserPopup.findViewById(R.id.close_video_chooser);
-        youtubePlayerView = view.getRootView().findViewById(R.id.activity_main_youtubePlayerView);
+        youtubePlayerView = view.getRootView()  .findViewById(R.id.activity_main_youtubePlayerView);
         //getLifecycle().addObserver(youtubePlayerView);
 
         dialogBuilder.setView(videoChooserPopup);

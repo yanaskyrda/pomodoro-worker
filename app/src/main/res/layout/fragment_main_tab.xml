@@ -49,12 +49,12 @@
         app:layout_constraintRight_toRightOf="parent"
         android:layout_width="250dp"
         android:layout_height="250dp"
-        android:background="@drawable/drawable_timer_circle"
+        android:background="@drawable/drawable_outer_timer_circle"
         android:indeterminate="false"
         android:max="100"
         android:progress="100"
-        android:progressDrawable="@drawable/drawable_outer_timer_circle"
-        android:rotation="-90" />
+        android:progressDrawable="@drawable/drawable_timer_circle"
+        android:rotation="270" />
 
     <TextView
         android:id="@+id/textViewTime"
@@ -64,20 +64,54 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:gravity="center"
-        android:text="00:01:00"
+        android:text="00:25:00"
         android:textColor="@color/Black"
         android:textSize="30sp" />
 
-    <Button
-        android:id="@+id/startSessionButton"
-        android:text="Start Session"
-        android:layout_width="150dp"
+
+    <LinearLayout
+        android:id="@+id/sessionControlButtons"
+        android:orientation="horizontal"
+        android:background="@android:drawable/bottom_bar"
+        android:paddingHorizontal="70dp"
+        android:layout_width="fill_parent"
         android:layout_height="30dp"
+        android:theme="@style/AppTheme"
+        android:backgroundTint="@android:color/transparent"
         app:layout_constraintTop_toBottomOf="@id/progressBarCircle"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:textColor="@color/White"
-        android:background="@drawable/drawable_button_shape"/>
+        app:layout_constraintLeft_toLeftOf="parent">
+
+        <ImageButton
+            android:id="@+id/settings"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:paddingVertical="30dp"
+            android:paddingHorizontal="30dp"
+            android:scaleType="fitXY"
+            android:background="@android:color/transparent"
+            android:src="@drawable/play_next_button" />
+
+        <Button
+            android:id="@+id/startSessionButton"
+            android:text="Start Session"
+            android:layout_width="150dp"
+            android:layout_height="30dp"
+            app:layout_constraintTop_toBottomOf="@id/progressBarCircle"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:textColor="@color/White"
+            android:background="@drawable/drawable_button_shape"/>
+
+        <ImageButton
+            android:id="@+id/resetTimerButton"
+            android:layout_width="50dp"
+            android:layout_height="fill_parent"
+            android:paddingHorizontal="10dp"
+            android:scaleType="fitXY"
+            android:background="@android:color/transparent"
+            android:src="@drawable/reset_button" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/currentSong"
