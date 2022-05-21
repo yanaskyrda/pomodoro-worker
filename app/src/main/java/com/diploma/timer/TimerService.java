@@ -27,14 +27,21 @@ public final class TimerService {
     private Button startStopSessionButton;
     private ImageButton resetButton;
     private CountDownTimer countDownTimer;
+    private TextView textSessionStatus;
+    private TextView textRoundProgress;
 
     private long timeCountInMilliSeconds = 60000;
     private final String START_SESSION = "START SESSION";
     private final String STOP_SESSION = "STOP SESSION";
     private final String RESUME_SESSION = "RESUME SESSION";
 
+    private final String FOCUS = "FOCUS";
+    private final String BREAK = "BREAK";
+    private final String BIG_BREAK = "BIG BREAK";
+    private final String ROUND_PROGRESS_TEMPLATE = "%d / %d";
+
     private final SessionsSettingsService sessionsSettingsService;
-    private int currentRound = 1;
+    private int currentRound = 0;
     private boolean isBreak = false;
 
     public void initViews(View view) {
@@ -42,6 +49,8 @@ public final class TimerService {
         textViewTime = view.findViewById(R.id.text_session_time);
         startStopSessionButton = view.findViewById(R.id.start_session_button);
         resetButton = view.findViewById(R.id.reset_timer_button);
+        textSessionStatus = view.findViewById(R.id.text_session_status);
+        textRoundProgress = view.findViewById(R.id.text_round_progress);
 
         initListeners();
     }
@@ -65,7 +74,9 @@ public final class TimerService {
                 setTimerValues(sessionsSettingsService.getActiveSetting().getFocusTime());
                 setProgressBarValues();
                 startStopSessionButton.setText(STOP_SESSION);
+                textSessionStatus.setText(FOCUS);
                 timerStatus = TimerStatus.IN_PROCESS;
+                currentRound++;
                 startCountDownTimer();
                 break;
             //process -> pause
@@ -82,6 +93,8 @@ public final class TimerService {
     }
 
     private void startCountDownTimer() {
+        textRoundProgress.setText(String.format(Locale.ROOT, ROUND_PROGRESS_TEMPLATE,
+                currentRound, sessionsSettingsService.getActiveSetting().getRoundsCount()));
         countDownTimer = new CountDownTimer(timeCountInMilliSeconds, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -93,7 +106,10 @@ public final class TimerService {
             public void onFinish() {
                 if (currentRound == sessionsSettingsService.getActiveSetting().getRoundsCount()) {
                     startStopSessionButton.setText(START_SESSION);
+                    textSessionStatus.setText("");
+                    textRoundProgress.setText("");
                     timerStatus = TimerStatus.STOPPED;
+                    currentRound = 0;
                     textViewTime.setText(hmsTimeFormatter(timeCountInMilliSeconds));
                     setProgressBarValues();
                     return;
@@ -101,15 +117,20 @@ public final class TimerService {
 
                 if (!isBreak) {
                     if (currentRound % sessionsSettingsService.getActiveSetting().getBigBreakFrequency() == 0) {
+                        textSessionStatus.setText(BIG_BREAK);
                         setTimerValues(sessionsSettingsService.getActiveSetting().getBigBreakTime());
                     } else {
+                        textSessionStatus.setText(BREAK);
                         setTimerValues(sessionsSettingsService.getActiveSetting().getBreakTime());
                     }
                     isBreak = true;
                 } else {
+                    textSessionStatus.setText(FOCUS);
                     setTimerValues(sessionsSettingsService.getActiveSetting().getFocusTime());
                     isBreak = false;
                     currentRound++;
+                    textRoundProgress.setText(String.format(Locale.ROOT, ROUND_PROGRESS_TEMPLATE,
+                            currentRound, sessionsSettingsService.getActiveSetting().getRoundsCount()));
                 }
 
                 textViewTime.setText(hmsTimeFormatter(timeCountInMilliSeconds));
@@ -126,6 +147,9 @@ public final class TimerService {
             countDownTimer.cancel();
             textViewTime.setText(hmsTimeFormatter(timeCountInMilliSeconds));
             startStopSessionButton.setText(START_SESSION);
+            textSessionStatus.setText("");
+            textRoundProgress.setText("");
+            currentRound = 0;
             timerStatus = TimerStatus.STOPPED;
         }
     }
