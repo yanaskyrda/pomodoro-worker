@@ -31,6 +31,9 @@ import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.protocol.types.Image;
 import com.spotify.protocol.types.Track;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link MainTabFragment#newInstance} factory method to
@@ -244,7 +247,7 @@ public class MainTabFragment extends Fragment {
 
         final EditText editTextId = videoChooserView.findViewById(R.id.youtube_video_input);
         final Button closeButton = videoChooserView.findViewById(R.id.close_video_chooser);
-        youtubePlayerView = view.getRootView()  .findViewById(R.id.activity_main_youtubePlayerView);
+        youtubePlayerView = view.getRootView().findViewById(R.id.activity_main_youtubePlayerView);
         //getLifecycle().addObserver(youtubePlayerView);
 
         dialogBuilder.setView(videoChooserView);
@@ -274,5 +277,16 @@ public class MainTabFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         closeButton.setOnClickListener(v -> sessionSettingDialog.dismiss());
+    }
+
+    public static String getVideoIdFromUrl(@NonNull String videoUrl) {
+        String videoId = "";
+        String regex = "http(?:s)?:\\/\\/(?:m.)?(?:www\\.)?youtu(?:\\.be\\/|be\\.com\\/(?:watch\\?(?:feature=youtu.be\\&)?v=|v\\/|embed\\/|user\\/(?:[\\w#]+\\/)+))([^&#?\\n]+)";
+        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(videoUrl);
+        if (matcher.find()) {
+            videoId = matcher.group(1);
+        }
+        return videoId;
     }
 }
