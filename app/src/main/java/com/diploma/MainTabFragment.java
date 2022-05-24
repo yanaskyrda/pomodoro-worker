@@ -169,7 +169,7 @@ public class MainTabFragment extends Fragment {
     }
 
     private void playPlaylist(View view) {
-        spotifyAppRemote.getPlayerApi().play("spotify:playlist:37i9dQZF1EQqkOPvHGajmW");
+        spotifyAppRemote.getPlayerApi().play("spotify:playlist:37i9dQZF1DX9sIqqvKsjG8");
         setTrackTitle(view);
     }
 
@@ -255,7 +255,7 @@ public class MainTabFragment extends Fragment {
         sessionSettingDialog.show();
 
         closeButton.setOnClickListener(v -> {
-            String videoId = editTextId.getText().toString();
+            String videoId = "9jRGR8n0a68";
             youtubePlayerView.getYouTubePlayerWhenReady(youTubePlayer -> youTubePlayer.cueVideo(videoId, 0));
             sessionSettingDialog.dismiss();
         });
