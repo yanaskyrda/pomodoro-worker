@@ -5,6 +5,12 @@ public class MusicSettingEntity {
     private String playlistId;
     private Float distractionRate;
 
+    public MusicSettingEntity(int id, String playlistId, Float distractionRate) {
+        this.id = id;
+        this.playlistId = playlistId;
+        this.distractionRate = distractionRate;
+    }
+
     public int getId() {
         return id;
     }

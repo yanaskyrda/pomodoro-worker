@@ -5,6 +5,12 @@ public class VideoSettingEntity {
     private String videoId;
     private Float distractionRate;
 
+    public VideoSettingEntity(int id, String videoId, Float distractionRate) {
+        this.id = id;
+        this.videoId = videoId;
+        this.distractionRate = distractionRate;
+    }
+
     public int getId() {
         return id;
     }

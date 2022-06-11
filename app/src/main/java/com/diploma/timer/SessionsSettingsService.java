@@ -1,8 +1,12 @@
 package com.diploma.timer;
 
+import com.diploma.database.DatabaseHandler;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 public final class SessionsSettingsService {
     private static SessionsSettingsService instance;
@@ -13,9 +17,7 @@ public final class SessionsSettingsService {
 
     private SessionsSettingsService() {
         sessionSettingDataSet = new ArrayList<>();
-        sessionSettingDataSet.add(new SessionSettingEntity(3, 2, 1, 2, 3));
-        sessionSettingDataSet.add(new SessionSettingEntity(4, 25, 5));
-        sessionSettingDataSet.add(new SessionSettingEntity(2, 50, 10));
+        setSessionSettingDataSet(DatabaseHandler.getInstance(null).getAllSessionSettings());
         activeSetting = sessionSettingDataSet.get(0);
     }
 
@@ -39,6 +41,7 @@ public final class SessionsSettingsService {
     }
 
     public SessionSettingEntity getSessionSetting(int position) {
+        sessionSettingDataSet.sort(Comparator.comparing(SessionSettingEntity::getDistractionRate));
         return sessionSettingDataSet.get(position);
     }
 

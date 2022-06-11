@@ -51,13 +51,13 @@ public class DistractionService {
         }
     }
 
-    private SensorEventListener listener = new SensorEventListener() {
+    private final SensorEventListener listener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
             float xChange = Math.abs(event.values[0]);
             float yChange = Math.abs(event.values[1]);
             float zChange = Math.abs(event.values[2]);
-            if (xChange > 20 && yChange > 20 && zChange > 20) {
+            if (xChange > 0 && yChange > 0 && zChange > 0) {
                 DatabaseHandler dbHandler = DatabaseHandler.getInstance(null);
 
                 SessionSettingEntity sessionSetting = sessionsSettingsService.getActiveSetting();

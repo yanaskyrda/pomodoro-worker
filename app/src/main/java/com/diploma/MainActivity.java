@@ -43,6 +43,10 @@ public class MainActivity extends AppCompatActivity
         TabLayout tabLayout = findViewById(R.id.tabLayout);
 
         new TabLayoutMediator(tabLayout, viewPager2, this).attach();
+
+        initializeSensorManager();
+        //to clear all saved data programmatically
+        //deleteDatabase("PomodoroAppSettings");
     }
 
     public void setViewPagerAdapter() {
@@ -65,7 +69,6 @@ public class MainActivity extends AppCompatActivity
         if (sensorManager == null) {
             sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
             distractionService = DistractionService.getInstance(sensorManager);
-            distractionService.initializeListener();
         }
     }
 }

@@ -28,14 +28,14 @@ public class SessionSettingEntity {
     private Integer bigBreakFrequency = 0;
 
     /**
-     * Distraction rate for setting. The bigger value - the worse productivity.
-     */
-    private Float distractionRate = 0f;
-
-    /**
      * Time of one big rest time round in minutes.
      */
     private Integer bigBreakTime = 0;
+
+    /**
+     * Distraction rate for setting. The bigger value - the worse productivity.
+     */
+    private Float distractionRate = 0f;
 
     public SessionSettingEntity(Integer roundsCount, Integer focusTime, Integer breakTime) {
         this.roundsCount = roundsCount;
@@ -49,6 +49,18 @@ public class SessionSettingEntity {
         this.breakTime = breakTime;
         this.bigBreakFrequency = bigBreakFrequency;
         this.bigBreakTime = bigBreakTime;
+    }
+
+    public SessionSettingEntity(int id, Integer roundsCount, Integer focusTime, Integer breakTime,
+                                Integer bigBreakFrequency, Integer bigBreakTime,
+                                Float distractionRate) {
+        this.id = id;
+        this.roundsCount = roundsCount;
+        this.focusTime = focusTime;
+        this.breakTime = breakTime;
+        this.bigBreakFrequency = bigBreakFrequency;
+        this.bigBreakTime = bigBreakTime;
+        this.distractionRate = distractionRate;
     }
 
     public String getSimpleName() {

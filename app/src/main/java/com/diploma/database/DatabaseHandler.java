@@ -4,6 +4,7 @@ import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -12,6 +13,11 @@ import androidx.annotation.Nullable;
 
 import com.diploma.spotify.MusicSettingEntity;
 import com.diploma.timer.SessionSettingEntity;
+import com.diploma.youtube.VideoSettingEntity;
+import com.diploma.youtube.VideoSettingsService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
     private static DatabaseHandler databaseHandlerInstance;
@@ -85,7 +91,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 BIG_BREAK_FREQUENCY + ", " +
                 BIG_BREAK_TIME + ", " +
                 DISTRACTIONS_RATE +
-                ") VALUES(4, 25, 5, 2, 10, 0)");
+                ") VALUES(2, 50, 10, 0, 0, 0)");
     }
 
     private void createVideosTable(SQLiteDatabase sqLiteDatabase) {
@@ -181,7 +187,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(DISTRACTIONS_RATE, musicSettingEntity.getDistractionRate());
 
         return db.update(TABLE_MUSICS, values, PLAYLIST_ID + " = ?",
-                new String[] { String.valueOf(musicSettingEntity.getPlaylistId()) });
+                new String[]{String.valueOf(musicSettingEntity.getPlaylistId())});
     }
 
     public int updateVideoDistractionRate(com.diploma.youtube.VideoSettingEntity videoSettingEntity) {
@@ -191,7 +197,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(DISTRACTIONS_RATE, videoSettingEntity.getDistractionRate());
 
         return db.update(TABLE_MUSICS, values, VIDEO_ID + " = ?",
-                new String[] { String.valueOf(videoSettingEntity.getVideoId()) });
+                new String[]{String.valueOf(videoSettingEntity.getVideoId())});
     }
 
     public int updateSessionDistractionRate(SessionSettingEntity sessionSettingEntity) {
@@ -201,6 +207,91 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(DISTRACTIONS_RATE, sessionSettingEntity.getDistractionRate());
 
         return db.update(TABLE_MUSICS, values, KEY_ID + " = ?",
-                new String[] { String.valueOf(sessionSettingEntity.getId()) });
+                new String[]{String.valueOf(sessionSettingEntity.getId())});
+    }
+
+    public List<SessionSettingEntity> getAllSessionSettings() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        List<SessionSettingEntity> result = new ArrayList<>();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_SESSIONS +
+                " ORDER BY " + DISTRACTIONS_RATE, null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    SessionSettingEntity sessionSetting = new SessionSettingEntity(
+                            cursor.getInt(cursor.getColumnIndex(KEY_ID)),
+                            cursor.getInt(cursor.getColumnIndex(KEY_ROUND_COUNT)),
+                            cursor.getInt(cursor.getColumnIndex(FOCUS_TIME)),
+                            cursor.getInt(cursor.getColumnIndex(BREAK_TIME)),
+                            cursor.getInt(cursor.getColumnIndex(BIG_BREAK_FREQUENCY)),
+                            cursor.getInt(cursor.getColumnIndex(BIG_BREAK_TIME)),
+                            cursor.getFloat(cursor.getColumnIndex(DISTRACTIONS_RATE))
+                    );
+                    result.add(sessionSetting);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Exception while trying to get session settings from db");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return result;
+    }
+
+    public List<MusicSettingEntity> getAllMusicsSettings() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        List<MusicSettingEntity> result = new ArrayList<>();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_MUSICS +
+                " ORDER BY " + DISTRACTIONS_RATE, null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    MusicSettingEntity musicSetting = new MusicSettingEntity(
+                            cursor.getInt(cursor.getColumnIndex(KEY_ID)),
+                            cursor.getString(cursor.getColumnIndex(PLAYLIST_ID)),
+                            cursor.getFloat(cursor.getColumnIndex(DISTRACTIONS_RATE))
+                    );
+                    result.add(musicSetting);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Exception while trying to get musics settings from db");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return result;
+    }
+
+    public List<VideoSettingEntity> getAllVideosSettings() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        List<VideoSettingEntity> result = new ArrayList<>();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_VIDEOS +
+                " ORDER BY " + DISTRACTIONS_RATE, null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    VideoSettingEntity videoSetting = new VideoSettingEntity(
+                            cursor.getInt(cursor.getColumnIndex(KEY_ID)),
+                            cursor.getString(cursor.getColumnIndex(VIDEO_ID)),
+                            cursor.getFloat(cursor.getColumnIndex(DISTRACTIONS_RATE))
+                    );
+                    result.add(videoSetting);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Exception while trying to get videos settings from db");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return result;
     }
 }

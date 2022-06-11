@@ -118,7 +118,9 @@ public final class TimerService {
                 }
 
                 if (!isBreak) {
-                    if (currentRound % sessionsSettingsService.getActiveSetting().getBigBreakFrequency() == 0) {
+                    int bigBreakFrequency = sessionsSettingsService.getActiveSetting()
+                            .getBigBreakFrequency();
+                    if (bigBreakFrequency != 0 && currentRound % bigBreakFrequency == 0) {
                         textSessionStatus.setText(BIG_BREAK);
                         setTimerValues(sessionsSettingsService.getActiveSetting().getBigBreakTime());
                     } else {
