@@ -60,20 +60,20 @@ public class DistractionService {
             if (xChange > 20 && yChange > 20 && zChange > 20) {
                 DatabaseHandler dbHandler = DatabaseHandler.getInstance(null);
 
+                SessionSettingEntity sessionSetting = sessionsSettingsService.getActiveSetting();
+                sessionSetting.setDistractionRate(sessionSetting.getDistractionRate()
+                        + DISTRACTION_CHANGE_DELTA / sessionSetting.getFocusTime());
+                dbHandler.updateSessionDistractionRate(sessionSetting);
+
                 MusicSettingEntity musicSetting = musicsSettingsService.getActiveSetting();
                 musicSetting.setDistractionRate(musicSetting.getDistractionRate()
-                        + DISTRACTION_CHANGE_DELTA);
+                        + DISTRACTION_CHANGE_DELTA / sessionSetting.getFocusTime());
                 dbHandler.updateMusicDistractionRate(musicSetting);
 
                 VideoSettingEntity videoSetting = videosSettingsService.getActiveSetting();;
                 videoSetting.setDistractionRate(videoSetting.getDistractionRate()
-                        + DISTRACTION_CHANGE_DELTA);
+                        + DISTRACTION_CHANGE_DELTA / sessionSetting.getFocusTime());
                 dbHandler.updateVideoDistractionRate(videoSetting);
-
-                SessionSettingEntity sessionSetting = sessionsSettingsService.getActiveSetting();
-                sessionSetting.setDistractionRate(sessionSetting.getDistractionRate()
-                        + DISTRACTION_CHANGE_DELTA);
-                dbHandler.updateSessionDistractionRate(sessionSetting);
             }
         }
         @Override
