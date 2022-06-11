@@ -7,15 +7,15 @@ import java.util.List;
 public final class SessionsSettingsService {
     private static SessionsSettingsService instance;
 
-    private List<SessionSetting> sessionSettingDataSet;
+    private List<SessionSettingEntity> sessionSettingDataSet;
 
-    private SessionSetting activeSetting;
+    private SessionSettingEntity activeSetting;
 
     private SessionsSettingsService() {
         sessionSettingDataSet = new ArrayList<>();
-        sessionSettingDataSet.add(new SessionSetting(3, 2, 1, 2, 3));
-        sessionSettingDataSet.add(new SessionSetting(4, 25, 5));
-        sessionSettingDataSet.add(new SessionSetting(2, 50, 10));
+        sessionSettingDataSet.add(new SessionSettingEntity(3, 2, 1, 2, 3));
+        sessionSettingDataSet.add(new SessionSettingEntity(4, 25, 5));
+        sessionSettingDataSet.add(new SessionSettingEntity(2, 50, 10));
         activeSetting = sessionSettingDataSet.get(0);
     }
 
@@ -26,19 +26,19 @@ public final class SessionsSettingsService {
         return instance;
     }
 
-    public List<SessionSetting> getSessionSettingDataSet() {
+    public List<SessionSettingEntity> getSessionSettingDataSet() {
         return sessionSettingDataSet;
     }
 
-    public void setSessionSettingDataSet(List<SessionSetting> sessionSettingDataSet) {
+    public void setSessionSettingDataSet(List<SessionSettingEntity> sessionSettingDataSet) {
         this.sessionSettingDataSet = sessionSettingDataSet;
     }
 
-    public void addSessionSetting(SessionSetting... sessionSetting) {
+    public void addSessionSetting(SessionSettingEntity... sessionSetting) {
         sessionSettingDataSet.addAll(Arrays.asList(sessionSetting));
     }
 
-    public SessionSetting getSessionSetting(int position) {
+    public SessionSettingEntity getSessionSetting(int position) {
         return sessionSettingDataSet.get(position);
     }
 
@@ -50,11 +50,11 @@ public final class SessionsSettingsService {
         return sessionSettingDataSet.size();
     }
 
-    public SessionSetting getActiveSetting() {
+    public SessionSettingEntity getActiveSetting() {
         return activeSetting;
     }
 
-    public void setActiveSetting(SessionSetting activeSetting) {
+    public void setActiveSetting(SessionSettingEntity activeSetting) {
         this.activeSetting = activeSetting;
     }
 }

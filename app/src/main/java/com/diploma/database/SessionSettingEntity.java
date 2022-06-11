@@ -1,8 +1,6 @@
 package com.diploma.database;
 
-import com.diploma.timer.SessionSetting;
-
-public class SessionSettingEntity extends SessionSetting {
+public class SessionSettingEntity extends com.diploma.timer.SessionSettingEntity {
 
     private float distractionsRate;
 

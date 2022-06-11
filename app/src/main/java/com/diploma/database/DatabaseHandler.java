@@ -10,9 +10,11 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.diploma.timer.SessionSetting;
+import com.diploma.spotify.MusicSettingEntity;
+import com.diploma.timer.SessionSettingEntity;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
+    private static DatabaseHandler databaseHandlerInstance;
 
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "PomodoroAppSettings";
@@ -32,7 +34,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TABLE_MUSICS = "musics";
     private static final String PLAYLIST_ID = "playlist_id";
 
-    public DatabaseHandler(@Nullable Context context) {
+    public static DatabaseHandler getInstance(@Nullable Context context) {
+        if (databaseHandlerInstance == null) {
+            databaseHandlerInstance = new DatabaseHandler(context);
+        }
+        return databaseHandlerInstance;
+    }
+
+    private DatabaseHandler(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -107,7 +116,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
-    public void addSessionSetting(SessionSetting sessionSetting) {
+    public void addSessionSetting(SessionSettingEntity sessionSetting) {
         SQLiteDatabase db = getWritableDatabase();
 
         db.beginTransaction();
@@ -163,5 +172,35 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         } finally {
             db.endTransaction();
         }
+    }
+
+    public int updateMusicDistractionRate(MusicSettingEntity musicSettingEntity) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(DISTRACTIONS_RATE, musicSettingEntity.getDistractionRate());
+
+        return db.update(TABLE_MUSICS, values, PLAYLIST_ID + " = ?",
+                new String[] { String.valueOf(musicSettingEntity.getPlaylistId()) });
+    }
+
+    public int updateVideoDistractionRate(com.diploma.youtube.VideoSettingEntity videoSettingEntity) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(DISTRACTIONS_RATE, videoSettingEntity.getDistractionRate());
+
+        return db.update(TABLE_MUSICS, values, VIDEO_ID + " = ?",
+                new String[] { String.valueOf(videoSettingEntity.getVideoId()) });
+    }
+
+    public int updateSessionDistractionRate(SessionSettingEntity sessionSettingEntity) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(DISTRACTIONS_RATE, sessionSettingEntity.getDistractionRate());
+
+        return db.update(TABLE_MUSICS, values, KEY_ID + " = ?",
+                new String[] { String.valueOf(sessionSettingEntity.getId()) });
     }
 }

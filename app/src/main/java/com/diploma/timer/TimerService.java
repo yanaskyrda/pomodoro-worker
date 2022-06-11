@@ -95,6 +95,7 @@ public final class TimerService {
     private void startCountDownTimer() {
         textRoundProgress.setText(String.format(Locale.ROOT, ROUND_PROGRESS_TEMPLATE,
                 currentRound, sessionsSettingsService.getActiveSetting().getRoundsCount()));
+        DistractionService.getInstance(null).initializeListener();
         countDownTimer = new CountDownTimer(timeCountInMilliSeconds, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -112,6 +113,7 @@ public final class TimerService {
                     currentRound = 0;
                     textViewTime.setText(hmsTimeFormatter(timeCountInMilliSeconds));
                     setProgressBarValues();
+                    DistractionService.getInstance(null).deinitializeListener();
                     return;
                 }
 
@@ -124,6 +126,7 @@ public final class TimerService {
                         setTimerValues(sessionsSettingsService.getActiveSetting().getBreakTime());
                     }
                     isBreak = true;
+                    DistractionService.getInstance(null).deinitializeListener();
                 } else {
                     textSessionStatus.setText(FOCUS);
                     setTimerValues(sessionsSettingsService.getActiveSetting().getFocusTime());
@@ -131,6 +134,7 @@ public final class TimerService {
                     currentRound++;
                     textRoundProgress.setText(String.format(Locale.ROOT, ROUND_PROGRESS_TEMPLATE,
                             currentRound, sessionsSettingsService.getActiveSetting().getRoundsCount()));
+                    DistractionService.getInstance(null).initializeListener();
                 }
 
                 textViewTime.setText(hmsTimeFormatter(timeCountInMilliSeconds));
