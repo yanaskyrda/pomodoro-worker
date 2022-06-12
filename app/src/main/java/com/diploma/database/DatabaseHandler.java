@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import com.diploma.spotify.MusicSettingEntity;
 import com.diploma.timer.SessionSettingEntity;
 import com.diploma.youtube.VideoSettingEntity;
-import com.diploma.youtube.VideoSettingsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -208,13 +207,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 new String[]{String.valueOf(musicSettingEntity.getPlaylistId())});
     }
 
-    public int updateVideoDistractionRate(com.diploma.youtube.VideoSettingEntity videoSettingEntity) {
+    public int updateVideoDistractionRate(VideoSettingEntity videoSettingEntity) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(DISTRACTIONS_RATE, videoSettingEntity.getDistractionRate());
 
-        return db.update(TABLE_MUSICS, values, VIDEO_ID + " = ?",
+        return db.update(TABLE_VIDEOS, values, VIDEO_ID + " = ?",
                 new String[]{String.valueOf(videoSettingEntity.getVideoId())});
     }
 

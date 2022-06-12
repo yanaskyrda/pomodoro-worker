@@ -66,14 +66,18 @@ public class DistractionService {
                 dbHandler.updateSessionDistractionRate(sessionSetting);
 
                 MusicSettingEntity musicSetting = musicsSettingsService.getActiveSetting();
-                musicSetting.setDistractionRate(musicSetting.getDistractionRate()
-                        + DISTRACTION_CHANGE_DELTA / sessionSetting.getFocusTime());
-                dbHandler.updateMusicDistractionRate(musicSetting);
+                if (musicSetting != null) {
+                    musicSetting.setDistractionRate(musicSetting.getDistractionRate()
+                            + DISTRACTION_CHANGE_DELTA / sessionSetting.getFocusTime());
+                    dbHandler.updateMusicDistractionRate(musicSetting);
+                }
 
-                VideoSettingEntity videoSetting = videosSettingsService.getActiveSetting();;
-                videoSetting.setDistractionRate(videoSetting.getDistractionRate()
-                        + DISTRACTION_CHANGE_DELTA / sessionSetting.getFocusTime());
-                dbHandler.updateVideoDistractionRate(videoSetting);
+                VideoSettingEntity videoSetting = videosSettingsService.getActiveSetting();
+                if (videoSetting != null) {
+                    videoSetting.setDistractionRate(videoSetting.getDistractionRate()
+                            + DISTRACTION_CHANGE_DELTA / sessionSetting.getFocusTime());
+                    dbHandler.updateVideoDistractionRate(videoSetting);
+                }
             }
         }
         @Override

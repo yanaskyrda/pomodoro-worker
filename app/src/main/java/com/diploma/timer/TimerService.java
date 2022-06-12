@@ -8,6 +8,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.diploma.R;
+import com.diploma.spotify.SpotifyPlayerService;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +42,7 @@ public final class TimerService {
     private final String ROUND_PROGRESS_TEMPLATE = "%d / %d";
 
     private final SessionsSettingsService sessionsSettingsService;
+    private final SpotifyPlayerService spotifyPlayerService;
     private int currentRound = 0;
     private boolean isBreak = false;
 
@@ -64,10 +66,12 @@ public final class TimerService {
         switch (timerStatus) {
             //pause -> resume
             case PAUSED:
-                setProgressBarValues();
                 startStopSessionButton.setText(STOP_SESSION);
                 timerStatus = TimerStatus.IN_PROCESS;
                 startCountDownTimer();
+                if (!isBreak) {
+                    spotifyPlayerService.forceStart();
+                }
                 break;
             //-> new start
             case STOPPED:
@@ -78,12 +82,14 @@ public final class TimerService {
                 timerStatus = TimerStatus.IN_PROCESS;
                 currentRound++;
                 startCountDownTimer();
+                spotifyPlayerService.forceStart();
                 break;
             //process -> pause
             case IN_PROCESS:
                 startStopSessionButton.setText(RESUME_SESSION);
                 timerStatus = TimerStatus.PAUSED;
                 countDownTimer.cancel();
+                spotifyPlayerService.forceStop();
                 break;
         }
     }
@@ -99,6 +105,7 @@ public final class TimerService {
         countDownTimer = new CountDownTimer(timeCountInMilliSeconds, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
+                timeCountInMilliSeconds = millisUntilFinished;
                 textViewTime.setText(hmsTimeFormatter(millisUntilFinished));
                 progressBarCircle.setProgress((int) (millisUntilFinished / 1000));
             }
@@ -106,6 +113,7 @@ public final class TimerService {
             @Override
             public void onFinish() {
                 if (currentRound == sessionsSettingsService.getActiveSetting().getRoundsCount()) {
+                    spotifyPlayerService.forceStop();
                     startStopSessionButton.setText(START_SESSION);
                     textSessionStatus.setText("");
                     textRoundProgress.setText("");
@@ -118,6 +126,7 @@ public final class TimerService {
                 }
 
                 if (!isBreak) {
+                    spotifyPlayerService.forceStop();
                     int bigBreakFrequency = sessionsSettingsService.getActiveSetting()
                             .getBigBreakFrequency();
                     if (bigBreakFrequency != 0 && currentRound % bigBreakFrequency == 0) {
@@ -130,6 +139,7 @@ public final class TimerService {
                     isBreak = true;
                     DistractionService.getInstance(null).deinitializeListener();
                 } else {
+                    spotifyPlayerService.forceStart();
                     textSessionStatus.setText(FOCUS);
                     setTimerValues(sessionsSettingsService.getActiveSetting().getFocusTime());
                     isBreak = false;
@@ -157,6 +167,7 @@ public final class TimerService {
             textRoundProgress.setText("");
             currentRound = 0;
             timerStatus = TimerStatus.STOPPED;
+            spotifyPlayerService.forceStop();
         }
     }
 
@@ -184,6 +195,7 @@ public final class TimerService {
     private TimerService(View view) {
         initViews(view);
         sessionsSettingsService = SessionsSettingsService.getInstance();
+        spotifyPlayerService = SpotifyPlayerService.getInstance(null, null);
     }
 
     public static TimerService getInstance(View view) {
