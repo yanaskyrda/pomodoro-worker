@@ -20,7 +20,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.diploma.spotify.MusicOptionsAdapter;
 import com.diploma.spotify.MusicsSettingsService;
+import com.diploma.spotify.SpotifyPlayerService;
 import com.diploma.spotify.SpotifyPlayerState;
 import com.diploma.timer.SessionOptionsAdapter;
 import com.diploma.timer.SessionsSettingsService;
@@ -44,21 +46,15 @@ import java.util.regex.Pattern;
  */
 public class MainTabFragment extends Fragment {
 
-    //youtube section
     private YouTubePlayerView youtubePlayerView;
-    //end youtube section
-
-    //start spotify section
-    private SpotifyAppRemote spotifyAppRemote;
-    private SpotifyPlayerState spotifyPlayerState = SpotifyPlayerState.UNKNOWN;
-    //end spotify section
+    private SpotifyPlayerService spotifyPlayerService;
+    private TimerService timerService;
 
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog sessionSettingDialog;
     private AlertDialog videosSettingDialog;
     private AlertDialog musicsSettingDialog;
 
-    private TimerService timerService;
     private SessionsSettingsService sessionsSettingsService;
     private MusicsSettingsService musicsSettingsService;
     private VideoSettingsService videoSettingsService;
@@ -94,21 +90,8 @@ public class MainTabFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         connectYoutube(view);
-
-        //spotify
-        ImageButton playSongButton = view.findViewById(R.id.play_song_button);
-        ImageButton playPreviousSongButton = view.findViewById(R.id.previous_song_button);
-        ImageButton playNextSongButton = view.findViewById(R.id.next_song_button);
-
-        connectSpotify(view);
-        playSongButton.setOnClickListener(v -> pauseOrResumeSpotifyPlayer(view, playSongButton));
-        playNextSongButton.setOnClickListener(this::skipToNextSong);
-        playPreviousSongButton.setOnClickListener(this::skipToPreviousSong);
-        //spotify
-
-        //timer
+        spotifyPlayerService = SpotifyPlayerService.getInstance(this.requireContext(), view);
         timerService = TimerService.getInstance(view);
-        //timer
 
         sessionsSettingsService = SessionsSettingsService.getInstance();
         videoSettingsService = VideoSettingsService.getInstance();
@@ -116,6 +99,9 @@ public class MainTabFragment extends Fragment {
 
         final Button openVideosChooser = view.findViewById(R.id.video_playlist_button);
         openVideosChooser.setOnClickListener(this::createNewVideosDialog);
+
+        final Button openMusicsChooser = view.findViewById(R.id.music_playlist_button);
+        openMusicsChooser.setOnClickListener(this::createNewMusicDialog);
 
         final ImageButton openSessionSetting = view.findViewById(R.id.sessions_settings_button);
         openSessionSetting.setOnClickListener(this::createNewSessionSettingsDialog);
@@ -135,118 +121,10 @@ public class MainTabFragment extends Fragment {
         //});
     }
 
-    private void connectSpotify(@NonNull View view) {
-//        TextView userView = view.findViewById(R.id.user);
-
-        SharedPreferences sharedPreferences = this.requireActivity()
-                .getSharedPreferences("SPOTIFY", 0);
-//        userView.setText(sharedPreferences.getString("userid", "No User"));
-
-        connectSpotifyRemoteApp();
-    }
-
-    protected void connectSpotifyRemoteApp() {
-        ConnectionParams connectionParams =
-                new ConnectionParams.Builder(CLIENT_ID)
-                        .setRedirectUri(REDIRECT_URI)
-                        .showAuthView(true)
-                        .build();
-
-
-        SpotifyAppRemote.connect(this.requireContext(), connectionParams,
-                new Connector.ConnectionListener() {
-
-                    public void onConnected(SpotifyAppRemote receivedSpotifyAppRemote) {
-                        spotifyAppRemote = receivedSpotifyAppRemote;
-                        spotifyPlayerState = SpotifyPlayerState.INITIALIZED;
-                        Log.d("Spotify remote app", "Connected successfully.");
-                    }
-
-                    public void onFailure(Throwable throwable) {
-                        Log.e("Spotify remote app", throwable.getMessage(), throwable);
-                    }
-                });
-    }
-
     @Override
     public void onStop() {
         super.onStop();
-        spotifyAppRemote.getPlayerApi().pause();
-        SpotifyAppRemote.disconnect(spotifyAppRemote);
-        spotifyPlayerState = SpotifyPlayerState.DISCONNECTED;
-    }
-
-    private void playPlaylist(View view) {
-        spotifyAppRemote.getPlayerApi().play("spotify:playlist:37i9dQZF1DX9sIqqvKsjG8");
-        setTrackTitle(view);
-    }
-
-    private void setTrackTitle(View view) {
-        spotifyAppRemote.getPlayerApi()
-                .subscribeToPlayerState()
-                .setEventCallback(playerState -> {
-                    final Track track = playerState.track;
-                    if (track != null) {
-                        TextView currentSongTitle = view.findViewById(R.id.current_song);
-                        String songTitlePlaceholder = view.getResources()
-                                .getString(R.string.current_song_title);
-                        currentSongTitle.setText(String.format(songTitlePlaceholder,
-                                track.artist.name, track.name));
-                        Log.d("MainTabFragment", track.name + " by " + track.artist.name);
-                    }
-                });
-    }
-
-    private void pauseOrResumeSpotifyPlayer(View view, ImageButton button) {
-        switch (spotifyPlayerState) {
-            case INITIALIZED:
-                playPlaylist(view);
-                button.setImageResource(R.drawable.pause_button);
-                spotifyPlayerState = SpotifyPlayerState.PLAYING;
-                break;
-            case PAUSED:
-                spotifyAppRemote.getPlayerApi().resume();
-                button.setImageResource(R.drawable.pause_button);
-                spotifyPlayerState = SpotifyPlayerState.PLAYING;
-                break;
-            case PLAYING:
-                spotifyAppRemote.getPlayerApi().pause();
-                button.setImageResource(R.drawable.play_button);
-                spotifyPlayerState = SpotifyPlayerState.PAUSED;
-                break;
-            default:
-                Log.d("MainTabFragment", "Unrecognizable spotify player state");
-        }
-    }
-
-    private void skipToNextSong(View view) {
-        switch (spotifyPlayerState) {
-            case PAUSED:
-                spotifyAppRemote.getPlayerApi().skipNext();
-                spotifyAppRemote.getPlayerApi().pause();
-                break;
-            case PLAYING:
-                spotifyAppRemote.getPlayerApi().skipNext();
-                break;
-            default:
-                return;
-        }
-        setTrackTitle(view);
-    }
-
-    private void skipToPreviousSong(View view) {
-        switch (spotifyPlayerState) {
-            case PAUSED:
-                spotifyAppRemote.getPlayerApi().skipPrevious();
-                spotifyAppRemote.getPlayerApi().pause();
-                break;
-            case PLAYING:
-                spotifyAppRemote.getPlayerApi().skipPrevious();
-                break;
-            default:
-                return;
-        }
-        setTrackTitle(view);
+        spotifyPlayerService.onStop();
     }
 
     public void createNewVideosDialog(View view) {
@@ -280,6 +158,35 @@ public class MainTabFragment extends Fragment {
                         .cueVideo(VideoSettingsService.getInstance()
                                 .getActiveSetting().getVideoId(), 0)
                 ));
+    }
+
+    public void createNewMusicDialog(View view) {
+        dialogBuilder = new AlertDialog.Builder(view.getContext());
+        final View musicChooserView = getLayoutInflater().inflate(R.layout.music_chooser_popup, null);
+
+        final Button closeButton = musicChooserView.findViewById(R.id.close_music_chooser);
+        youtubePlayerView = view.getRootView().findViewById(R.id.activity_main_youtubePlayerView);
+
+        dialogBuilder.setView(musicChooserView);
+        musicsSettingDialog = dialogBuilder.create();
+        musicsSettingDialog.show();
+
+
+        RecyclerView recyclerView = musicChooserView.findViewById(R.id.music_option_recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+        MusicOptionsAdapter adapter = new MusicOptionsAdapter(musicsSettingsService);
+        recyclerView.setAdapter(adapter);
+
+        closeButton.setOnClickListener(v -> {
+            spotifyPlayerService.setPlaylistId(musicsSettingsService
+                    .getActiveSetting().getPlaylistId());
+            musicsSettingDialog.dismiss();
+        });
+
+        musicsSettingDialog.setOnDismissListener(v ->
+                spotifyPlayerService.setPlaylistId(musicsSettingsService
+                        .getActiveSetting().getPlaylistId())
+        );
     }
 
     public void createNewSessionSettingsDialog(View view) {

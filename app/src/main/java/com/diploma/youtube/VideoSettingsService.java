@@ -59,6 +59,9 @@ public class VideoSettingsService {
     }
 
     public int getDataSetSize() {
+        if (videoSettingDataSet == null) {
+            return 0;
+        }
         return videoSettingDataSet.size();
     }
 }
