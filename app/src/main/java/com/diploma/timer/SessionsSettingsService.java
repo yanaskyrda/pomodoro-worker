@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 public final class SessionsSettingsService {
     private static SessionsSettingsService instance;
@@ -17,8 +16,10 @@ public final class SessionsSettingsService {
 
     private SessionsSettingsService() {
         sessionSettingDataSet = new ArrayList<>();
-        setSessionSettingDataSet(DatabaseHandler.getInstance(null).getAllSessionSettings());
-        activeSetting = sessionSettingDataSet.get(0);
+        setSettingsDataSet(DatabaseHandler.getInstance(null).getAllSessionSettings());
+        if (!sessionSettingDataSet.isEmpty()) {
+            activeSetting = sessionSettingDataSet.get(0);
+        }
     }
 
     public static SessionsSettingsService getInstance() {
@@ -32,11 +33,11 @@ public final class SessionsSettingsService {
         return sessionSettingDataSet;
     }
 
-    public void setSessionSettingDataSet(List<SessionSettingEntity> sessionSettingDataSet) {
+    public void setSettingsDataSet(List<SessionSettingEntity> sessionSettingDataSet) {
         this.sessionSettingDataSet = sessionSettingDataSet;
     }
 
-    public void addSessionSetting(SessionSettingEntity... sessionSetting) {
+    public void addSetting(SessionSettingEntity... sessionSetting) {
         sessionSettingDataSet.addAll(Arrays.asList(sessionSetting));
     }
 
@@ -45,11 +46,16 @@ public final class SessionsSettingsService {
         return sessionSettingDataSet.get(position);
     }
 
-    public void removeSessionSetting(int position) {
+    public void removeSetting(int position) {
+        DatabaseHandler.getInstance(null)
+                .deleteSessionSetting(sessionSettingDataSet.get(position).getId());
         sessionSettingDataSet.remove(position);
     }
 
     public int getDataSetSize() {
+        if (sessionSettingDataSet == null) {
+            return 0;
+        }
         return sessionSettingDataSet.size();
     }
 

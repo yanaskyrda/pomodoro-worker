@@ -1,7 +1,12 @@
 package com.diploma.youtube;
 
+import com.diploma.database.DatabaseHandler;
 import com.diploma.spotify.MusicSettingEntity;
+import com.diploma.timer.SessionSettingEntity;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 public class VideoSettingsService {
@@ -11,11 +16,38 @@ public class VideoSettingsService {
 
     private VideoSettingEntity activeSetting;
 
+    private VideoSettingsService() {
+        videoSettingDataSet = new ArrayList<>();
+        setSettingsDataSet(DatabaseHandler.getInstance(null).getAllVideosSettings());
+        if (!videoSettingDataSet.isEmpty()) {
+            activeSetting = videoSettingDataSet.get(0);
+        }
+    }
+
     public static VideoSettingsService getInstance() {
         if (instance == null) {
             instance = new VideoSettingsService();
         }
         return instance;
+    }
+
+    public void setSettingsDataSet(List<VideoSettingEntity> settings) {
+        this.videoSettingDataSet = settings;
+    }
+
+    public void addSetting(VideoSettingEntity... videoSettings) {
+        videoSettingDataSet.addAll(Arrays.asList(videoSettings));
+    }
+
+    public VideoSettingEntity getVideoSetting(int position) {
+        videoSettingDataSet.sort(Comparator.comparing(VideoSettingEntity::getDistractionRate));
+        return videoSettingDataSet.get(position);
+    }
+
+    public void removeSetting(int position) {
+        DatabaseHandler.getInstance(null)
+                .deleteVideoSetting(videoSettingDataSet.get(position).getId());
+        videoSettingDataSet.remove(position);
     }
 
     public VideoSettingEntity getActiveSetting() {
@@ -24,5 +56,9 @@ public class VideoSettingsService {
 
     public void setActiveSetting(VideoSettingEntity activeSetting) {
         this.activeSetting = activeSetting;
+    }
+
+    public int getDataSetSize() {
+        return videoSettingDataSet.size();
     }
 }

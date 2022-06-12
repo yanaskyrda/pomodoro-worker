@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity
 
         initializeSensorManager();
         //to clear all saved data programmatically
-        //deleteDatabase("PomodoroAppSettings");
+//        deleteDatabase("PomodoroAppSettings");
     }
 
     public void setViewPagerAdapter() {

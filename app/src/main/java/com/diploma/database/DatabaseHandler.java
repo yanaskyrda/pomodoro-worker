@@ -102,6 +102,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + ")";
 
         sqLiteDatabase.execSQL(CREATE_VIDEOS_TABLE_QUERY);
+
+        insertInitialVideosData(sqLiteDatabase);
+    }
+
+    private void insertInitialVideosData(SQLiteDatabase sqLiteDatabase) {
+        sqLiteDatabase.execSQL("INSERT INTO " + TABLE_VIDEOS + " (" +
+                VIDEO_ID + ", " +
+                DISTRACTIONS_RATE +
+                ") VALUES('9jRGR8n0a68', 0)");
     }
 
     private void createMusicsTable(SQLiteDatabase sqLiteDatabase) {
@@ -112,6 +121,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + ")";
 
         sqLiteDatabase.execSQL(CREATE_MUSICS_TABLE_QUERY);
+
+        insertInitialMusicsData(sqLiteDatabase);
+    }
+
+    private void insertInitialMusicsData(SQLiteDatabase sqLiteDatabase) {
+        sqLiteDatabase.execSQL("INSERT INTO " + TABLE_MUSICS + " (" +
+                PLAYLIST_ID + ", " +
+                DISTRACTIONS_RATE +
+                ") VALUES('spotify:playlist:37i9dQZF1DX9sIqqvKsjG8', 0)");
     }
 
     @Override
@@ -293,5 +311,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             }
         }
         return result;
+    }
+
+    public int deleteSessionSetting(Integer id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        return db.delete(TABLE_SESSIONS, KEY_ID + " = ?",
+                new String[]{String.valueOf(id)});
+    }
+
+    public int deleteVideoSetting(Integer id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        return db.delete(TABLE_VIDEOS, KEY_ID + " = ?",
+                new String[]{String.valueOf(id)});
+    }
+
+    public int deleteMusicsSetting(Integer id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        return db.delete(TABLE_MUSICS, KEY_ID + " = ?",
+                new String[]{String.valueOf(id)});
     }
 }

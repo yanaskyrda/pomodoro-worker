@@ -70,7 +70,7 @@ public class SessionOptionsAdapter extends RecyclerView.Adapter<SessionOptionsAd
         viewHolder.getSessionOption()
                 .setText(sessionsSettingsService.getSessionSetting(position).getSimpleName());
         viewHolder.getDeleteSessionOption().setOnClickListener(v -> {
-            sessionsSettingsService.removeSessionSetting(position);
+            sessionsSettingsService.removeSetting(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, sessionsSettingsService.getDataSetSize());
         });

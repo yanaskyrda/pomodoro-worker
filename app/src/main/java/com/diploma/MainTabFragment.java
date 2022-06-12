@@ -20,10 +20,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.diploma.spotify.MusicsSettingsService;
 import com.diploma.spotify.SpotifyPlayerState;
 import com.diploma.timer.SessionOptionsAdapter;
 import com.diploma.timer.SessionsSettingsService;
 import com.diploma.timer.TimerService;
+import com.diploma.youtube.VideoOptionsAdapter;
+import com.diploma.youtube.VideoSettingsService;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
@@ -52,9 +55,13 @@ public class MainTabFragment extends Fragment {
 
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog sessionSettingDialog;
+    private AlertDialog videosSettingDialog;
+    private AlertDialog musicsSettingDialog;
 
     private TimerService timerService;
     private SessionsSettingsService sessionsSettingsService;
+    private MusicsSettingsService musicsSettingsService;
+    private VideoSettingsService videoSettingsService;
 
     public MainTabFragment() {
         // Required empty public constructor
@@ -104,6 +111,8 @@ public class MainTabFragment extends Fragment {
         //timer
 
         sessionsSettingsService = SessionsSettingsService.getInstance();
+        videoSettingsService = VideoSettingsService.getInstance();
+        musicsSettingsService = MusicsSettingsService.getInstance();
 
         final Button openVideosChooser = view.findViewById(R.id.video_playlist_button);
         openVideosChooser.setOnClickListener(this::createNewVideosDialog);
@@ -112,7 +121,6 @@ public class MainTabFragment extends Fragment {
         openSessionSetting.setOnClickListener(this::createNewSessionSettingsDialog);
     }
 
-    //todo rename
     private void connectYoutube(@NonNull View view) {
 //        final EditText editTextId = view.findViewById(R.id.editTextId);
 //        Button buttonPlay = findViewById(R.id.buttonPlay);
@@ -245,20 +253,33 @@ public class MainTabFragment extends Fragment {
         dialogBuilder = new AlertDialog.Builder(view.getContext());
         final View videoChooserView = getLayoutInflater().inflate(R.layout.video_chooser_popup, null);
 
-        final EditText editTextId = videoChooserView.findViewById(R.id.youtube_video_input);
+//        final EditText editTextId = videoChooserView.findViewById(R.id.youtube_video_input);
         final Button closeButton = videoChooserView.findViewById(R.id.close_video_chooser);
         youtubePlayerView = view.getRootView().findViewById(R.id.activity_main_youtubePlayerView);
         //getLifecycle().addObserver(youtubePlayerView);
 
         dialogBuilder.setView(videoChooserView);
-        sessionSettingDialog = dialogBuilder.create();
-        sessionSettingDialog.show();
+        videosSettingDialog = dialogBuilder.create();
+        videosSettingDialog.show();
+
+
+        RecyclerView recyclerView = videoChooserView.findViewById(R.id.video_option_recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+        VideoOptionsAdapter adapter = new VideoOptionsAdapter(videoSettingsService);
+        recyclerView.setAdapter(adapter);
 
         closeButton.setOnClickListener(v -> {
-            String videoId = "9jRGR8n0a68";
+            String videoId = VideoSettingsService.getInstance()
+                    .getActiveSetting().getVideoId();//"9jRGR8n0a68";
             youtubePlayerView.getYouTubePlayerWhenReady(youTubePlayer -> youTubePlayer.cueVideo(videoId, 0));
-            sessionSettingDialog.dismiss();
+            videosSettingDialog.dismiss();
         });
+
+        videosSettingDialog.setOnDismissListener(v -> youtubePlayerView
+                .getYouTubePlayerWhenReady(youTubePlayer -> youTubePlayer
+                        .cueVideo(VideoSettingsService.getInstance()
+                                .getActiveSetting().getVideoId(), 0)
+                ));
     }
 
     public void createNewSessionSettingsDialog(View view) {
