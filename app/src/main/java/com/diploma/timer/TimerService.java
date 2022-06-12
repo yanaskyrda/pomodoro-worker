@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import com.diploma.R;
 import com.diploma.spotify.SpotifyPlayerService;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -43,6 +45,7 @@ public final class TimerService {
 
     private final SessionsSettingsService sessionsSettingsService;
     private final SpotifyPlayerService spotifyPlayerService;
+    private YouTubePlayerView youTubePlayerView;
     private int currentRound = 0;
     private boolean isBreak = false;
 
@@ -53,6 +56,7 @@ public final class TimerService {
         resetButton = view.findViewById(R.id.reset_timer_button);
         textSessionStatus = view.findViewById(R.id.text_session_status);
         textRoundProgress = view.findViewById(R.id.text_round_progress);
+        youTubePlayerView = view.findViewById(R.id.activity_main_youtubePlayerView);
 
         initListeners();
     }
@@ -69,8 +73,14 @@ public final class TimerService {
                 startStopSessionButton.setText(STOP_SESSION);
                 timerStatus = TimerStatus.IN_PROCESS;
                 startCountDownTimer();
+                spotifyPlayerService.forceStart();
                 if (!isBreak) {
-                    spotifyPlayerService.forceStart();
+                    youTubePlayerView.getYouTubePlayerWhenReady(youTubePlayer -> {
+                        youTubePlayer.play();
+                        if (spotifyPlayerService.isReadyToPlay()) {
+                            youTubePlayer.mute();
+                        }
+                    });
                 }
                 break;
             //-> new start
@@ -83,6 +93,12 @@ public final class TimerService {
                 currentRound++;
                 startCountDownTimer();
                 spotifyPlayerService.forceStart();
+                youTubePlayerView.getYouTubePlayerWhenReady(youTubePlayer -> {
+                    youTubePlayer.play();
+                    if (spotifyPlayerService.isReadyToPlay()) {
+                        youTubePlayer.mute();
+                    }
+                });
                 break;
             //process -> pause
             case IN_PROCESS:
@@ -90,6 +106,7 @@ public final class TimerService {
                 timerStatus = TimerStatus.PAUSED;
                 countDownTimer.cancel();
                 spotifyPlayerService.forceStop();
+                youTubePlayerView.getYouTubePlayerWhenReady(YouTubePlayer::pause);
                 break;
         }
     }
@@ -114,6 +131,7 @@ public final class TimerService {
             public void onFinish() {
                 if (currentRound == sessionsSettingsService.getActiveSetting().getRoundsCount()) {
                     spotifyPlayerService.forceStop();
+                    youTubePlayerView.getYouTubePlayerWhenReady(YouTubePlayer::pause);
                     startStopSessionButton.setText(START_SESSION);
                     textSessionStatus.setText("");
                     textRoundProgress.setText("");
@@ -127,6 +145,7 @@ public final class TimerService {
 
                 if (!isBreak) {
                     spotifyPlayerService.forceStop();
+                    youTubePlayerView.getYouTubePlayerWhenReady(YouTubePlayer::pause);
                     int bigBreakFrequency = sessionsSettingsService.getActiveSetting()
                             .getBigBreakFrequency();
                     if (bigBreakFrequency != 0 && currentRound % bigBreakFrequency == 0) {
@@ -140,6 +159,7 @@ public final class TimerService {
                     DistractionService.getInstance(null).deinitializeListener();
                 } else {
                     spotifyPlayerService.forceStart();
+                    youTubePlayerView.getYouTubePlayerWhenReady(YouTubePlayer::pause);
                     textSessionStatus.setText(FOCUS);
                     setTimerValues(sessionsSettingsService.getActiveSetting().getFocusTime());
                     isBreak = false;
@@ -168,6 +188,10 @@ public final class TimerService {
             currentRound = 0;
             timerStatus = TimerStatus.STOPPED;
             spotifyPlayerService.forceStop();
+            youTubePlayerView.getYouTubePlayerWhenReady(youTubePlayer -> {
+                youTubePlayer.seekTo(0);
+                youTubePlayer.pause();
+            });
         }
     }
 

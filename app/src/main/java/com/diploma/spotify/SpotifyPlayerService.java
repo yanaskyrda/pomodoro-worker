@@ -116,16 +116,21 @@ public class SpotifyPlayerService {
     }
 
     public void pauseOrResumeSpotifyPlayer() {
+
         switch (spotifyPlayerState) {
             case INITIALIZED:
-                playPlaylist();
-                playSongButton.setImageResource(R.drawable.pause_button);
-                spotifyPlayerState = SpotifyPlayerState.PLAYING;
+                if (isReadyToPlay()) {
+                    playPlaylist();
+                    playSongButton.setImageResource(R.drawable.pause_button);
+                    spotifyPlayerState = SpotifyPlayerState.PLAYING;
+                }
                 break;
             case PAUSED:
-                spotifyAppRemote.getPlayerApi().resume();
-                playSongButton.setImageResource(R.drawable.pause_button);
-                spotifyPlayerState = SpotifyPlayerState.PLAYING;
+                if (isReadyToPlay()) {
+                    spotifyAppRemote.getPlayerApi().resume();
+                    playSongButton.setImageResource(R.drawable.pause_button);
+                    spotifyPlayerState = SpotifyPlayerState.PLAYING;
+                }
                 break;
             case PLAYING:
                 spotifyAppRemote.getPlayerApi().pause();
@@ -138,13 +143,15 @@ public class SpotifyPlayerService {
     }
 
     public void forceStart() {
-        if (spotifyPlayerState.equals(SpotifyPlayerState.INITIALIZED)) {
-            playPlaylist();
-        } else if (spotifyPlayerState.equals(SpotifyPlayerState.PAUSED)) {
-            spotifyAppRemote.getPlayerApi().resume();
+        if (isReadyToPlay()) {
+            if (spotifyPlayerState.equals(SpotifyPlayerState.INITIALIZED)) {
+                playPlaylist();
+            } else if (spotifyPlayerState.equals(SpotifyPlayerState.PAUSED)) {
+                spotifyAppRemote.getPlayerApi().resume();
+            }
+            playSongButton.setImageResource(R.drawable.pause_button);
+            spotifyPlayerState = SpotifyPlayerState.PLAYING;
         }
-        playSongButton.setImageResource(R.drawable.pause_button);
-        spotifyPlayerState = SpotifyPlayerState.PLAYING;
     }
 
     public void forceStop() {
@@ -156,32 +163,40 @@ public class SpotifyPlayerService {
     }
 
     private void skipToNextSong() {
-        switch (spotifyPlayerState) {
-            case PAUSED:
-                spotifyAppRemote.getPlayerApi().skipNext();
-                spotifyAppRemote.getPlayerApi().pause();
-                break;
-            case PLAYING:
-                spotifyAppRemote.getPlayerApi().skipNext();
-                break;
-            default:
-                return;
+        if (isReadyToPlay()) {
+            switch (spotifyPlayerState) {
+                case PAUSED:
+                    spotifyAppRemote.getPlayerApi().skipNext();
+                    spotifyAppRemote.getPlayerApi().pause();
+                    break;
+                case PLAYING:
+                    spotifyAppRemote.getPlayerApi().skipNext();
+                    break;
+                default:
+                    return;
+            }
+            setTrackTitle();
         }
-        setTrackTitle();
     }
 
     private void skipToPreviousSong() {
-        switch (spotifyPlayerState) {
-            case PAUSED:
-                spotifyAppRemote.getPlayerApi().skipPrevious();
-                spotifyAppRemote.getPlayerApi().pause();
-                break;
-            case PLAYING:
-                spotifyAppRemote.getPlayerApi().skipPrevious();
-                break;
-            default:
-                return;
+        if (isReadyToPlay()) {
+            switch (spotifyPlayerState) {
+                case PAUSED:
+                    spotifyAppRemote.getPlayerApi().skipPrevious();
+                    spotifyAppRemote.getPlayerApi().pause();
+                    break;
+                case PLAYING:
+                    spotifyAppRemote.getPlayerApi().skipPrevious();
+                    break;
+                default:
+                    return;
+            }
+            setTrackTitle();
         }
-        setTrackTitle();
+    }
+
+    public boolean isReadyToPlay() {
+        return playlistId != null;
     }
 }

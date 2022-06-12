@@ -108,17 +108,8 @@ public class MainTabFragment extends Fragment {
     }
 
     private void connectYoutube(@NonNull View view) {
-//        final EditText editTextId = view.findViewById(R.id.editTextId);
-//        Button buttonPlay = findViewById(R.id.buttonPlay);
-
         youtubePlayerView = view.findViewById(R.id.activity_main_youtubePlayerView);
         getLifecycle().addObserver(youtubePlayerView);
-
-
-        //buttonPlay.setOnClickListener(view -> {
-//        String videoId = editTextId.getText().toString();
-//        youtubePlayerView.getYouTubePlayerWhenReady(youTubePlayer -> youTubePlayer.cueVideo(videoId, 0));
-        //});
     }
 
     @Override
