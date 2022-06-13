@@ -13,6 +13,7 @@
     <string name="start_session">Start Session</string>
     <string name="null_time">00:00:00</string>
     <string name="create_new_session">Create New Session</string>
+    <string name="save">Save</string>
 
     <string-array name="tab_titles">
         <item>@string/Video</item>

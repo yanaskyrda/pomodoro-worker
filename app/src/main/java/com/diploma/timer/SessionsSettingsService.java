@@ -1,6 +1,7 @@
 package com.diploma.timer;
 
 import com.diploma.database.DatabaseHandler;
+import com.diploma.spotify.MusicSettingEntity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,6 +51,11 @@ public final class SessionsSettingsService {
         DatabaseHandler.getInstance(null)
                 .deleteSessionSetting(sessionSettingDataSet.get(position).getId());
         sessionSettingDataSet.remove(position);
+    }
+
+    public void createAndAddSetting(SessionSettingEntity sessionSetting) {
+        DatabaseHandler.getInstance(null).addSessionSetting(sessionSetting);
+        sessionSettingDataSet.add(sessionSetting);
     }
 
     public int getDataSetSize() {

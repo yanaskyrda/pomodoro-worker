@@ -1,6 +1,7 @@
 package com.diploma;
 
 import android.app.AlertDialog;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.diploma.spotify.MusicsSettingsService;
 import com.diploma.spotify.SpotifyPlayerService;
 import com.diploma.spotify.SpotifyUtils;
 import com.diploma.timer.SessionOptionsAdapter;
+import com.diploma.timer.SessionSettingEntity;
 import com.diploma.timer.SessionsSettingsService;
 import com.diploma.timer.TimerService;
 import com.diploma.youtube.VideoOptionsAdapter;
@@ -44,6 +46,7 @@ public class MainTabFragment extends Fragment {
     private AlertDialog sessionSettingDialog;
     private AlertDialog videosSettingDialog;
     private AlertDialog musicsSettingDialog;
+    private AlertDialog createNewSessionSettingDialog;
 
     private SessionsSettingsService sessionsSettingsService;
     private MusicsSettingsService musicsSettingsService;
@@ -88,13 +91,13 @@ public class MainTabFragment extends Fragment {
         musicsSettingsService = MusicsSettingsService.getInstance();
 
         final Button openVideosChooser = view.findViewById(R.id.video_playlist_button);
-        openVideosChooser.setOnClickListener(this::createNewVideosDialog);
+        openVideosChooser.setOnClickListener(this::createDialogToEditVideoSettings);
 
         final Button openMusicsChooser = view.findViewById(R.id.music_playlist_button);
-        openMusicsChooser.setOnClickListener(this::createNewMusicDialog);
+        openMusicsChooser.setOnClickListener(this::createDialogToEditMusicSettings);
 
         final ImageButton openSessionSetting = view.findViewById(R.id.sessions_settings_button);
-        openSessionSetting.setOnClickListener(this::createNewSessionSettingsDialog);
+        openSessionSetting.setOnClickListener(this::createDialogToEditSessionSettings);
 
         final Button expandYoutubeButton = view.findViewById(R.id.expand_youtube_button);
         expandYoutubeButton.setOnClickListener(v -> {
@@ -119,7 +122,7 @@ public class MainTabFragment extends Fragment {
         spotifyPlayerService.onStop();
     }
 
-    public void createNewVideosDialog(View view) {
+    public void createDialogToEditVideoSettings(View view) {
         dialogBuilder = new AlertDialog.Builder(view.getContext());
         final View videoChooserView = getLayoutInflater().inflate(R.layout.video_chooser_popup, null);
 
@@ -168,7 +171,7 @@ public class MainTabFragment extends Fragment {
         });
     }
 
-    public void createNewMusicDialog(View view) {
+    public void createDialogToEditMusicSettings(View view) {
         dialogBuilder = new AlertDialog.Builder(view.getContext());
         final View musicChooserView = getLayoutInflater().inflate(R.layout.music_chooser_popup, null);
         final Button musicChooserButton = view.getRootView().findViewById(R.id.music_playlist_button);
@@ -202,10 +205,11 @@ public class MainTabFragment extends Fragment {
         });
     }
 
-    public void createNewSessionSettingsDialog(View view) {
+    public void createDialogToEditSessionSettings(View view) {
         dialogBuilder = new AlertDialog.Builder(view.getContext());
         final View sessionSettingsView = getLayoutInflater().inflate(R.layout.session_setting_popup, null);
         final TextView timeText = view.getRootView().findViewById(R.id.text_session_time);
+        final Button createNewSessionButton = sessionSettingsView.findViewById(R.id.session_create_new_button);
 
         dialogBuilder.setView(sessionSettingsView);
         sessionSettingDialog = dialogBuilder.create();
@@ -223,5 +227,82 @@ public class MainTabFragment extends Fragment {
                                 sessionsSettingsService.getActiveSetting().getFocusTime()));
             }
         });
+
+        createNewSessionButton.setOnClickListener(v -> {
+            createDialogNewSessionSetting(v, adapter);
+        });
+    }
+
+    public void createDialogNewSessionSetting(View view, SessionOptionsAdapter adapter) {
+        dialogBuilder = new AlertDialog.Builder(view.getContext());
+        final View newSessionSettingsView = getLayoutInflater().inflate(R.layout.new_session_setting_popup, null);
+        final Button saveSessionButton = newSessionSettingsView.findViewById(R.id.save_new_setting_button);
+
+        final TextInputLayout roundCountLayout = newSessionSettingsView.findViewById(R.id.input_round_count);
+        final TextInputLayout focusTimeLayout = newSessionSettingsView.findViewById(R.id.input_focus_time);
+        final TextInputLayout breakTimeLayout = newSessionSettingsView.findViewById(R.id.input_break_time);
+        final TextInputLayout bigBreakFrequencyLayout = newSessionSettingsView.findViewById(R.id.input_big_break_frequency);
+        final TextInputLayout bigBreakTimeLayout = newSessionSettingsView.findViewById(R.id.input_big_break_time);
+
+        final TextView roundCountHintText = newSessionSettingsView.findViewById(R.id.input_round_count_hint);
+        final TextView focusTimeHintText = newSessionSettingsView.findViewById(R.id.input_focus_time_hint);
+        final TextView breakTimeHintText = newSessionSettingsView.findViewById(R.id.input_break_time_hint);
+
+        dialogBuilder.setView(newSessionSettingsView);
+        createNewSessionSettingDialog = dialogBuilder.create();
+        createNewSessionSettingDialog.show();
+
+        saveSessionButton.setOnClickListener(v -> {
+            Boolean validationFailed = false;
+            String roundCountText = null;
+            String focusTimeText = null;
+            String breakTimeText = null;
+            try {
+                roundCountText = validateSessionField(roundCountLayout, roundCountHintText);
+            } catch (IllegalArgumentException ignored) {
+                validationFailed = true;
+            }
+            try {
+                focusTimeText = validateSessionField(focusTimeLayout, focusTimeHintText);
+            } catch (IllegalArgumentException ignored) {
+                validationFailed = true;
+            }
+            try {
+                breakTimeText = validateSessionField(breakTimeLayout, breakTimeHintText);
+            } catch (IllegalArgumentException ignored) {
+                validationFailed = true;
+            }
+
+            if (!validationFailed) {
+                int bigBreakFrequencyText = getInputOrDefaultValue(bigBreakFrequencyLayout, 0);
+                int bigBreakTimeText = getInputOrDefaultValue(bigBreakTimeLayout, 0);
+                SessionSettingEntity newSessionSetting = new SessionSettingEntity(
+                        Integer.parseInt(roundCountText), Integer.parseInt(focusTimeText),
+                        Integer.parseInt(breakTimeText), bigBreakFrequencyText, bigBreakTimeText
+                );
+                sessionsSettingsService.createAndAddSetting(newSessionSetting);
+                adapter.notifyDataSetChanged();
+                createNewSessionSettingDialog.dismiss();
+            }
+        });
+    }
+
+    private String validateSessionField(TextInputLayout textInput, TextView textView) throws IllegalArgumentException {
+        String text = textInput.getEditText().getText().toString();
+        if (text.isEmpty()) {
+            textView.setTextColor(Color.RED);
+            throw new IllegalArgumentException();
+        } else {
+            textView.setTextColor(Color.GRAY);
+        }
+        return text;
+    }
+
+    private int getInputOrDefaultValue(TextInputLayout textInput, int defaultValue) {
+        String text = textInput.getEditText().getText().toString();
+        if (text.isEmpty()) {
+            return defaultValue;
+        }
+        return Integer.parseInt(text);
     }
 }

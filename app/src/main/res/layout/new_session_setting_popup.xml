@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:id="@+id/round_count_layout"
+        android:orientation="horizontal"
+        android:background="@android:drawable/bottom_bar"
+        android:paddingHorizontal="30dp"
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
+        android:theme="@style/AppTheme"
+        android:backgroundTint="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent">
+
+        <TextView
+            android:id="@+id/input_round_count_hint"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="5dp"
+            android:text="number of rounds*"
+            android:gravity="center"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_round_count"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_weight="1.0"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginHorizontal="5dp"
+            android:textColor="@color/Black">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="16sp"
+                android:maxLines="1"
+                android:inputType="number"
+                android:paddingVertical="0dp"
+                android:layout_marginHorizontal="10dp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/focus_time_layout"
+        android:orientation="horizontal"
+        android:background="@android:drawable/bottom_bar"
+        android:paddingHorizontal="30dp"
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
+        android:theme="@style/AppTheme"
+        android:backgroundTint="@android:color/transparent"
+        app:layout_constraintTop_toBottomOf="@id/round_count_layout"
+        app:layout_constraintLeft_toLeftOf="parent">
+
+        <TextView
+            android:id="@+id/input_focus_time_hint"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="5dp"
+            android:text="focus time* (minutes)"
+            android:gravity="center"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_focus_time"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_weight="1.0"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginHorizontal="5dp"
+            android:textColor="@color/Black">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="16sp"
+                android:maxLines="1"
+                android:inputType="number"
+                android:paddingVertical="0dp"
+                android:layout_marginHorizontal="10dp"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/break_time_layout"
+        android:orientation="horizontal"
+        android:background="@android:drawable/bottom_bar"
+        android:paddingHorizontal="30dp"
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
+        android:theme="@style/AppTheme"
+        android:backgroundTint="@android:color/transparent"
+        app:layout_constraintTop_toBottomOf="@id/focus_time_layout"
+        app:layout_constraintLeft_toLeftOf="parent">
+
+        <TextView
+            android:id="@+id/input_break_time_hint"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="5dp"
+            android:text="break time* (minutes)"
+            android:gravity="center"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_break_time"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_weight="1.0"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginHorizontal="5dp"
+            android:textColor="@color/Black">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="16sp"
+                android:maxLines="1"
+                android:inputType="number"
+                android:paddingVertical="0dp"
+                android:layout_marginHorizontal="10dp"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/big_break_frequency_layout"
+        android:orientation="horizontal"
+        android:background="@android:drawable/bottom_bar"
+        android:paddingHorizontal="30dp"
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
+        android:theme="@style/AppTheme"
+        android:backgroundTint="@android:color/transparent"
+        app:layout_constraintTop_toBottomOf="@id/break_time_layout"
+        app:layout_constraintLeft_toLeftOf="parent">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="5dp"
+            android:text="big break frequency"
+            android:gravity="center"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_big_break_frequency"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_weight="1.0"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginHorizontal="5dp"
+            android:textColor="@color/Black">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="16sp"
+                android:maxLines="1"
+                android:inputType="number"
+                android:paddingVertical="0dp"
+                android:layout_marginHorizontal="10dp"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/big_break_time_layout"
+        android:orientation="horizontal"
+        android:background="@android:drawable/bottom_bar"
+        android:paddingHorizontal="30dp"
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
+        android:theme="@style/AppTheme"
+        android:backgroundTint="@android:color/transparent"
+        app:layout_constraintTop_toBottomOf="@id/big_break_frequency_layout"
+        app:layout_constraintLeft_toLeftOf="parent">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="5dp"
+            android:text="big break time (minutes)"
+            android:gravity="center"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_big_break_time"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_weight="1.0"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginHorizontal="5dp"
+            android:textColor="@color/Black">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="16sp"
+                android:maxLines="1"
+                android:inputType="number"
+                android:paddingVertical="0dp"
+                android:layout_marginHorizontal="10dp"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/save_new_setting_button"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/big_break_time_layout"
+        android:layout_margin="5dp"
+        android:textColor="@color/Black"
+        android:text="@string/save"
+        android:background="@drawable/drawable_main_button_shape" />
+
+    <TextView
+        android:id="@+id/blank_space"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        app:layout_constraintTop_toBottomOf="@id/save_new_setting_button"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+    
+</androidx.constraintlayout.widget.ConstraintLayout>
