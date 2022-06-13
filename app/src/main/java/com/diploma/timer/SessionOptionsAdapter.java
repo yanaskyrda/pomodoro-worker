@@ -1,5 +1,6 @@
 package com.diploma.timer;
 
+import android.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import com.diploma.R;
 
 public class SessionOptionsAdapter extends RecyclerView.Adapter<SessionOptionsAdapter.ViewHolder> {
     SessionsSettingsService sessionsSettingsService;
+    AlertDialog activeAlertDialog;
 
     /**
      * Provide a reference to the type of views that you are using
@@ -49,8 +51,9 @@ public class SessionOptionsAdapter extends RecyclerView.Adapter<SessionOptionsAd
      * @param service Sessions setting service that contain all session setting options
      * by RecyclerView.
      */
-    public SessionOptionsAdapter(SessionsSettingsService service) {
+    public SessionOptionsAdapter(SessionsSettingsService service, AlertDialog sessionSettingDialog) {
         sessionsSettingsService = service;
+        activeAlertDialog = sessionSettingDialog;
     }
 
     // Create new views (invoked by the layout manager)
@@ -69,6 +72,10 @@ public class SessionOptionsAdapter extends RecyclerView.Adapter<SessionOptionsAd
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         viewHolder.getSessionOption()
                 .setText(sessionsSettingsService.getSessionSetting(position).getSimpleName());
+        viewHolder.getSessionOption().setOnClickListener(v -> {
+            sessionsSettingsService.setActiveSetting(sessionsSettingsService.getSessionSetting(position));
+            dismissPopup();
+        });
         viewHolder.getDeleteSessionOption().setOnClickListener(v -> {
             sessionsSettingsService.removeSetting(position);
             notifyItemRemoved(position);
@@ -80,5 +87,9 @@ public class SessionOptionsAdapter extends RecyclerView.Adapter<SessionOptionsAd
     @Override
     public int getItemCount() {
         return sessionsSettingsService.getDataSetSize();
+    }
+
+    private void dismissPopup() {
+        activeAlertDialog.dismiss();
     }
 }

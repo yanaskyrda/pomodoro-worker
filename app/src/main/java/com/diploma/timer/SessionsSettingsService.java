@@ -66,4 +66,8 @@ public final class SessionsSettingsService {
     public void setActiveSetting(SessionSettingEntity activeSetting) {
         this.activeSetting = activeSetting;
     }
+
+    public Boolean isActiveSettingPresent() {
+        return activeSetting != null;
+    }
 }

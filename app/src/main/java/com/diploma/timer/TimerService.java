@@ -106,7 +106,12 @@ public final class TimerService {
     }
 
     private void setTimerValues(int timeInMinutes) {
-        timeCountInMilliSeconds = (long) timeInMinutes * 5 * 1000;
+        timeCountInMilliSeconds = (long) timeInMinutes * 60 * 1000;
+    }
+
+    public void setTimeTextOfActiveSetting() {
+        setTimerValues(sessionsSettingsService.getActiveSetting().getFocusTime());
+        textViewTime.setText(hmsTimeFormatter(timeCountInMilliSeconds));
     }
 
     private void startCountDownTimer() {
@@ -209,6 +214,19 @@ public final class TimerService {
                         - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(milliSeconds)),
                 TimeUnit.MILLISECONDS.toSeconds(milliSeconds)
                         - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliSeconds)));
+    }
+
+    /**
+     * Convert minutes to HH:mm:ss time format
+     *
+     * @param minutes time that should be converter
+     * @return HH:mm:ss time formatted string
+     */
+    public String hmsTimeFormatterFromMinutes(long minutes) {
+        return String.format(Locale.ROOT, "%02d:%02d:00",
+                TimeUnit.MINUTES.toHours(minutes),
+                TimeUnit.MINUTES.toMinutes(minutes)
+                        - TimeUnit.HOURS.toMinutes(TimeUnit.MINUTES.toHours(minutes)));
     }
 
     private TimerService(View view) {

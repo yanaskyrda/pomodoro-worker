@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -159,7 +160,7 @@ public class MainTabFragment extends Fragment {
         });
 
         saveSettingButton.setOnClickListener(v -> {
-            String videoId =  YoutubeUtils.getVideoIdFromUrl(
+            String videoId = YoutubeUtils.getVideoIdFromUrl(
                     Objects.requireNonNull(editTextLayout.getEditText()).getText().toString());
             videoSettingsService.addSetting(videoId);
             adapter.notifyDataSetChanged();
@@ -170,7 +171,7 @@ public class MainTabFragment extends Fragment {
     public void createNewMusicDialog(View view) {
         dialogBuilder = new AlertDialog.Builder(view.getContext());
         final View musicChooserView = getLayoutInflater().inflate(R.layout.music_chooser_popup, null);
-        Button musicChooserButton = view.getRootView().findViewById(R.id.music_playlist_button);
+        final Button musicChooserButton = view.getRootView().findViewById(R.id.music_playlist_button);
         final TextInputLayout editTextLayout = musicChooserView.findViewById(R.id.input_setting_layout);
         final ImageButton saveSettingButton = musicChooserView.findViewById(R.id.save_streaming_option_button);
 
@@ -193,7 +194,7 @@ public class MainTabFragment extends Fragment {
         });
 
         saveSettingButton.setOnClickListener(v -> {
-            String playlistId =  SpotifyUtils.getPlaylistIdFromUrl(
+            String playlistId = SpotifyUtils.getPlaylistIdFromUrl(
                     Objects.requireNonNull(editTextLayout.getEditText()).getText().toString());
             musicsSettingsService.addSetting(playlistId);
             adapter.notifyDataSetChanged();
@@ -204,6 +205,7 @@ public class MainTabFragment extends Fragment {
     public void createNewSessionSettingsDialog(View view) {
         dialogBuilder = new AlertDialog.Builder(view.getContext());
         final View sessionSettingsView = getLayoutInflater().inflate(R.layout.session_setting_popup, null);
+        final TextView timeText = view.getRootView().findViewById(R.id.text_session_time);
 
         dialogBuilder.setView(sessionSettingsView);
         sessionSettingDialog = dialogBuilder.create();
@@ -211,7 +213,15 @@ public class MainTabFragment extends Fragment {
 
         RecyclerView recyclerView = sessionSettingsView.findViewById(R.id.session_option_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-        SessionOptionsAdapter adapter = new SessionOptionsAdapter(sessionsSettingsService);
+        SessionOptionsAdapter adapter = new SessionOptionsAdapter(sessionsSettingsService, sessionSettingDialog);
         recyclerView.setAdapter(adapter);
+
+        sessionSettingDialog.setOnDismissListener(v -> {
+            if (sessionsSettingsService.isActiveSettingPresent()) {
+                timeText.setText(TimerService.getInstance(null)
+                        .hmsTimeFormatterFromMinutes(
+                                sessionsSettingsService.getActiveSetting().getFocusTime()));
+            }
+        });
     }
 }
