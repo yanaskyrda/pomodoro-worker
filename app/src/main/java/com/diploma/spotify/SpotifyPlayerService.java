@@ -143,6 +143,7 @@ public class SpotifyPlayerService {
                         playPlaylist();
                         playlistChanged = false;
                     } else {
+
                         spotifyAppRemote.getPlayerApi().resume();
                     }
                     playSongButton.setImageResource(R.drawable.pause_button);

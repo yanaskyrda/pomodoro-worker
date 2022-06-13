@@ -88,6 +88,8 @@ public class VideoOptionsAdapter extends RecyclerView.Adapter<VideoOptionsAdapte
     }
 
     private void dismissPopup() {
-        activeAlertDialog.dismiss();
+        if (activeAlertDialog != null) {
+            activeAlertDialog.dismiss();
+        }
     }
 }

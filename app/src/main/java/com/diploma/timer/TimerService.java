@@ -67,8 +67,8 @@ public final class TimerService {
                 startStopSessionButton.setText(STOP_SESSION);
                 timerStatus = TimerStatus.IN_PROCESS;
                 startCountDownTimer();
-                spotifyPlayerService.forceStart();
                 if (!isBreak) {
+                    spotifyPlayerService.forceStart();
                     youTubePlayerView.getYouTubePlayerWhenReady(youTubePlayer -> {
                         youTubePlayer.play();
                         if (spotifyPlayerService.isReadyToPlay()) {

@@ -89,6 +89,8 @@ public class MusicOptionsAdapter extends RecyclerView.Adapter<MusicOptionsAdapte
     }
 
     private void dismissPopup() {
-        activeAlertDialog.dismiss();
+        if (activeAlertDialog != null) {
+            activeAlertDialog.dismiss();
+        }
     }
 }
