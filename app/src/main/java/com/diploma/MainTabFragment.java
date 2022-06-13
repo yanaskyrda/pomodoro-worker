@@ -22,7 +22,10 @@ import com.diploma.timer.TimerService;
 import com.diploma.youtube.VideoOptionsAdapter;
 import com.diploma.youtube.VideoSettingsService;
 import com.diploma.youtube.YoutubeUtils;
+import com.google.android.material.textfield.TextInputLayout;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
+
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -118,11 +121,11 @@ public class MainTabFragment extends Fragment {
         dialogBuilder = new AlertDialog.Builder(view.getContext());
         final View videoChooserView = getLayoutInflater().inflate(R.layout.video_chooser_popup, null);
 
-//        final EditText editTextId = videoChooserView.findViewById(R.id.youtube_video_input);
+        final TextInputLayout editTextLayout = videoChooserView.findViewById(R.id.input_setting_layout);
+        final ImageButton saveSettingButton = videoChooserView.findViewById(R.id.save_streaming_option_button);
         final Button hideYoutubeButton = videoChooserView.findViewById(R.id.hide_youtube_button);
         youtubePlayerView = view.getRootView().findViewById(R.id.activity_main_youtubePlayerView);
         Button videoChooserButton = view.getRootView().findViewById(R.id.video_playlist_button);
-        //getLifecycle().addObserver(youtubePlayerView);
 
         dialogBuilder.setView(videoChooserView);
         videosSettingDialog = dialogBuilder.create();
@@ -153,6 +156,14 @@ public class MainTabFragment extends Fragment {
                 youtubePlayerView.getYouTubePlayerWhenReady(youTubePlayer ->
                         youTubePlayer.cueVideo(videoId, 0));
             }
+        });
+
+        saveSettingButton.setOnClickListener(v -> {
+            String videoId =  YoutubeUtils.getVideoIdFromUrl(
+                    Objects.requireNonNull(editTextLayout.getEditText()).getText().toString());
+            videoSettingsService.addSetting(videoId);
+            adapter.notifyDataSetChanged();
+            editTextLayout.getEditText().setText("");
         });
     }
 

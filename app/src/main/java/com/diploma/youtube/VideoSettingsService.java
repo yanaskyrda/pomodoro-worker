@@ -1,8 +1,6 @@
 package com.diploma.youtube;
 
 import com.diploma.database.DatabaseHandler;
-import com.diploma.spotify.MusicSettingEntity;
-import com.diploma.timer.SessionSettingEntity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +32,15 @@ public class VideoSettingsService {
 
     public void addSetting(VideoSettingEntity... videoSettings) {
         videoSettingDataSet.addAll(Arrays.asList(videoSettings));
+    }
+
+    public void addSetting(String videoId) {
+        DatabaseHandler db = DatabaseHandler.getInstance(null);
+        db.addVideoSetting(videoId);
+        VideoSettingEntity videoSetting = db.getAllVideosSettings().stream()
+                .filter(s -> s.getVideoId().equals(videoId))
+                .findFirst().get();
+        videoSettingDataSet.add(videoSetting);
     }
 
     public VideoSettingEntity getVideoSetting(int position) {
