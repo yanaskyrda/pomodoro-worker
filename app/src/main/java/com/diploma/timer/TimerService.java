@@ -181,6 +181,7 @@ public final class TimerService {
         if (progressBarCircle.getProgress() != progressBarCircle.getMax()) {
             progressBarCircle.setProgress(progressBarCircle.getMax());
             countDownTimer.cancel();
+            setTimerValues(sessionsSettingsService.getActiveSetting().getFocusTime());
             textViewTime.setText(hmsTimeFormatter(timeCountInMilliSeconds));
             startStopSessionButton.setText(START_SESSION);
             textSessionStatus.setText("");
