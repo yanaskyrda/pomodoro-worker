@@ -10,6 +10,7 @@ import android.view.Window;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.diploma.Credentials;
 import com.diploma.MainActivity;
 import com.diploma.R;
 import com.spotify.sdk.android.auth.AuthorizationClient;
@@ -25,18 +26,6 @@ public class SpotifyLoginActivity extends AppCompatActivity {
     private RequestQueue queue;
 
     private static final int REQUEST_CODE = 1010;
-    public final static String REDIRECT_URI = "https://pomodoroworker.com/callback";
-    public final static String CLIENT_ID = "06e368bd1524482097455539dc4ec4ed";
-    private final static String SCOPES =
-                    "user-read-recently-played," +
-                    "user-library-modify," +
-                    "user-read-email," +
-                    "user-read-private," +
-                    "streaming," +
-                    "playlist-read," +
-                    "playlist-read-private," +
-                    "user-read-private," +
-                    "app-remote-control";
 
 
     @Override
@@ -52,8 +41,12 @@ public class SpotifyLoginActivity extends AppCompatActivity {
     }
 
     private void authenticateSpotify() {
-        AuthorizationRequest.Builder builder = new AuthorizationRequest.Builder(CLIENT_ID, AuthorizationResponse.Type.TOKEN, REDIRECT_URI);
-        builder.setScopes(new String[]{"user-read-private", "playlist-read", "playlist-read-private", "streaming"});
+        AuthorizationRequest.Builder builder = new AuthorizationRequest.Builder(
+                Credentials.SPOTIFY_CLIENT_ID,
+                AuthorizationResponse.Type.TOKEN,
+                Credentials.SPOTIFY_REDIRECT_URI);
+        builder.setScopes(new String[]{"user-read-private", "playlist-read",
+                "playlist-read-private", "streaming"});
         AuthorizationRequest request = builder.build();
 
         AuthorizationClient.openLoginActivity(this, REQUEST_CODE, request);

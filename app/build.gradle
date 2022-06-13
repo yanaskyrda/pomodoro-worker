@@ -26,9 +26,9 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation fileTree(dir: 'libs', include: ['*.aar'])
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
-    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.annotation:annotation:1.3.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
@@ -42,4 +42,14 @@ dependencies {
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.9.0'
 
     implementation "com.google.accompanist:accompanist-pager:0.23.1"
+
+    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+    implementation('com.google.api-client:google-api-client-android:1.25.0') {
+        exclude group: 'org.apache.httpcomponents'
+        exclude group: "com.google.guava"
+    }
+    implementation('com.google.apis:google-api-services-youtube:v3-rev222-1.25.0') {
+        exclude group: 'org.apache.httpcomponents'
+        exclude group: "com.google.guava"
+    }
 }

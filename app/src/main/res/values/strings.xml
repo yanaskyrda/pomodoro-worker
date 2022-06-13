@@ -6,6 +6,7 @@
     <string name="Music">Music</string>
     <string name="Main">Main</string>
     <string name="current_song_title">%1$s - %2$s</string>
+    <string name="hide_youtube">Hide Youtube</string>
 
     <string-array name="tab_titles">
         <item>@string/Video</item>

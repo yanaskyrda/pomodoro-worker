@@ -1,8 +1,5 @@
 package com.diploma.spotify;
 
-import static com.diploma.spotify.SpotifyLoginActivity.CLIENT_ID;
-import static com.diploma.spotify.SpotifyLoginActivity.REDIRECT_URI;
-
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.diploma.Credentials;
 import com.diploma.R;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
@@ -65,11 +63,10 @@ public class SpotifyPlayerService {
 
     protected void connectSpotifyRemoteApp(@NonNull Context context) {
         ConnectionParams connectionParams =
-                new ConnectionParams.Builder(CLIENT_ID)
-                        .setRedirectUri(REDIRECT_URI)
+                new ConnectionParams.Builder(Credentials.SPOTIFY_CLIENT_ID)
+                        .setRedirectUri(Credentials.SPOTIFY_REDIRECT_URI)
                         .showAuthView(true)
                         .build();
-
 
         SpotifyAppRemote.connect(context, connectionParams,
                 new Connector.ConnectionListener() {

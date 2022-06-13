@@ -1,19 +1,12 @@
 package com.diploma;
 
-import static com.diploma.spotify.SpotifyLoginActivity.CLIENT_ID;
-import static com.diploma.spotify.SpotifyLoginActivity.REDIRECT_URI;
-
 import android.app.AlertDialog;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -23,21 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.diploma.spotify.MusicOptionsAdapter;
 import com.diploma.spotify.MusicsSettingsService;
 import com.diploma.spotify.SpotifyPlayerService;
-import com.diploma.spotify.SpotifyPlayerState;
 import com.diploma.timer.SessionOptionsAdapter;
 import com.diploma.timer.SessionsSettingsService;
 import com.diploma.timer.TimerService;
 import com.diploma.youtube.VideoOptionsAdapter;
 import com.diploma.youtube.VideoSettingsService;
+import com.diploma.youtube.YoutubeUtils;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
-import com.spotify.android.appremote.api.ConnectionParams;
-import com.spotify.android.appremote.api.Connector;
-import com.spotify.android.appremote.api.SpotifyAppRemote;
-import com.spotify.protocol.types.Image;
-import com.spotify.protocol.types.Track;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -125,6 +110,7 @@ public class MainTabFragment extends Fragment {
 //        final EditText editTextId = videoChooserView.findViewById(R.id.youtube_video_input);
         final Button closeButton = videoChooserView.findViewById(R.id.close_video_chooser);
         youtubePlayerView = view.getRootView().findViewById(R.id.activity_main_youtubePlayerView);
+        Button videoChooserButton = view.getRootView().findViewById(R.id.video_playlist_button);
         //getLifecycle().addObserver(youtubePlayerView);
 
         dialogBuilder.setView(videoChooserView);
@@ -140,7 +126,10 @@ public class MainTabFragment extends Fragment {
         closeButton.setOnClickListener(v -> {
             String videoId = VideoSettingsService.getInstance()
                     .getActiveSetting().getVideoId();//"9jRGR8n0a68";
-            youtubePlayerView.getYouTubePlayerWhenReady(youTubePlayer -> youTubePlayer.cueVideo(videoId, 0));
+            videoChooserButton.setText(YoutubeUtils.getVideoTitle(videoId));
+            youtubePlayerView.getYouTubePlayerWhenReady(youTubePlayer ->
+                    youTubePlayer.cueVideo(videoId, 0));
+
             videosSettingDialog.dismiss();
         });
 
@@ -196,16 +185,5 @@ public class MainTabFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         closeButton.setOnClickListener(v -> sessionSettingDialog.dismiss());
-    }
-
-    public static String getVideoIdFromUrl(@NonNull String videoUrl) {
-        String videoId = "";
-        String regex = "http(?:s)?:\\/\\/(?:m.)?(?:www\\.)?youtu(?:\\.be\\/|be\\.com\\/(?:watch\\?(?:feature=youtu.be\\&)?v=|v\\/|embed\\/|user\\/(?:[\\w#]+\\/)+))([^&#?\\n]+)";
-        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(videoUrl);
-        if (matcher.find()) {
-            videoId = matcher.group(1);
-        }
-        return videoId;
     }
 }
