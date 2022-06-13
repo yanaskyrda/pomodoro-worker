@@ -23,15 +23,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class YoutubeUtils {
-    public static String getVideoTitle(String videoId) {
+    public static String getVideoTitle(String videoId, int maxLength) {
         if (videoId == null || videoId.isEmpty()) {
             return "unknown video title";
         }
         try {
             String title = new YoutubeAPIExecutor().execute(videoId).get(10, TimeUnit.SECONDS);
             if (!Objects.equals(title, videoId)) {
-                if (title.length() > 30) {
-                    title = title.substring(0, 30).concat("...");
+                if (title.length() > maxLength) {
+                    title = title.substring(0, maxLength).concat("...");
                 }
             }
             return title;

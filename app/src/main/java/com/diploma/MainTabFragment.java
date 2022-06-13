@@ -131,7 +131,7 @@ public class MainTabFragment extends Fragment {
 
         RecyclerView recyclerView = videoChooserView.findViewById(R.id.video_option_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-        VideoOptionsAdapter adapter = new VideoOptionsAdapter(videoSettingsService);
+        VideoOptionsAdapter adapter = new VideoOptionsAdapter(videoSettingsService, videosSettingDialog);
         recyclerView.setAdapter(adapter);
 
         hideYoutubeButton.setOnClickListener(v -> {
@@ -149,7 +149,7 @@ public class MainTabFragment extends Fragment {
             if (videoSettingsService.isActiveSettingPresent()) {
                 String videoId = VideoSettingsService.getInstance()
                         .getActiveSetting().getVideoId();
-                videoChooserButton.setText(YoutubeUtils.getVideoTitle(videoId));
+                videoChooserButton.setText(YoutubeUtils.getVideoTitle(videoId, 30));
                 youtubePlayerView.getYouTubePlayerWhenReady(youTubePlayer ->
                         youTubePlayer.cueVideo(videoId, 0));
             }

@@ -15,6 +15,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginHorizontal="5dp"
         android:textColor="@color/Black"
+        android:textSize="11sp"
         android:background="@drawable/drawable_main_button_shape" />
 
     <ImageButton

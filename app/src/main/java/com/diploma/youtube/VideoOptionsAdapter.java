@@ -1,5 +1,6 @@
 package com.diploma.youtube;
 
+import android.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import com.diploma.R;
 
 public class VideoOptionsAdapter extends RecyclerView.Adapter<VideoOptionsAdapter.ViewHolder> {
     VideoSettingsService videoSettingsService;
+    AlertDialog activeAlertDialog;
 
     /**
      * Provide a reference to the type of views that you are using
@@ -43,8 +45,9 @@ public class VideoOptionsAdapter extends RecyclerView.Adapter<VideoOptionsAdapte
      * @param service Video setting service that contain all video setting options
      * by RecyclerView.
      */
-    public VideoOptionsAdapter(VideoSettingsService service) {
+    public VideoOptionsAdapter(VideoSettingsService service, AlertDialog videosSettingDialog) {
         videoSettingsService = service;
+        activeAlertDialog = videosSettingDialog;
     }
 
     // Create new views (invoked by the layout manager)
@@ -62,7 +65,12 @@ public class VideoOptionsAdapter extends RecyclerView.Adapter<VideoOptionsAdapte
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         viewHolder.getVideoOption()
-                .setText(videoSettingsService.getVideoSetting(position).getVideoId());
+                .setText(YoutubeUtils.getVideoTitle(
+                        videoSettingsService.getVideoSetting(position).getVideoId(), 35));
+        viewHolder.getVideoOption().setOnClickListener(v -> {
+            videoSettingsService.setActiveSetting(videoSettingsService.getVideoSetting(position));
+            dismissPopup();
+        });
         viewHolder.getDeleteVideoOption().setOnClickListener(v -> {
             videoSettingsService.removeSetting(position);
             notifyItemRemoved(position);
@@ -77,5 +85,9 @@ public class VideoOptionsAdapter extends RecyclerView.Adapter<VideoOptionsAdapte
             return 0;
         }
         return videoSettingsService.getDataSetSize();
+    }
+
+    private void dismissPopup() {
+        activeAlertDialog.dismiss();
     }
 }

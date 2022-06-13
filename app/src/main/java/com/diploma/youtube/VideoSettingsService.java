@@ -19,9 +19,6 @@ public class VideoSettingsService {
     private VideoSettingsService() {
         videoSettingDataSet = new ArrayList<>();
         setSettingsDataSet(DatabaseHandler.getInstance(null).getAllVideosSettings());
-        if (!videoSettingDataSet.isEmpty()) {
-            activeSetting = videoSettingDataSet.get(0);
-        }
     }
 
     public static VideoSettingsService getInstance() {
