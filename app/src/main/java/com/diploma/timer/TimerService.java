@@ -18,12 +18,6 @@ import java.util.concurrent.TimeUnit;
 public final class TimerService {
     private static TimerService instance;
 
-    private enum TimerStatus {
-        IN_PROCESS,
-        PAUSED,
-        STOPPED
-    }
-
     private TimerStatus timerStatus = TimerStatus.STOPPED;
     private ProgressBar progressBarCircle;
     private TextView textViewTime;

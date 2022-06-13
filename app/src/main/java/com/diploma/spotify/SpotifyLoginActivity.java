@@ -27,6 +27,8 @@ public class SpotifyLoginActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE = 1010;
 
+    private static String token;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +66,8 @@ public class SpotifyLoginActivity extends AppCompatActivity {
                 // Response was successful and contains auth token
                 case TOKEN:
                     editor = getSharedPreferences("SPOTIFY", 0).edit();
-                    editor.putString("token", response.getAccessToken());
+                    token = response.getAccessToken();
+                    editor.putString("token", token);
                     Log.d("Auth", "token retrieved successfully");
                     editor.apply();
                     waitForUserInfo();
@@ -97,5 +100,9 @@ public class SpotifyLoginActivity extends AppCompatActivity {
     private void startMainActivity() {
         Intent newIntent = new Intent(SpotifyLoginActivity.this, MainActivity.class);
         startActivity(newIntent);
+    }
+
+    public static String getToken() {
+        return token;
     }
 }

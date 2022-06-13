@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.diploma.spotify.MusicOptionsAdapter;
 import com.diploma.spotify.MusicsSettingsService;
 import com.diploma.spotify.SpotifyPlayerService;
+import com.diploma.spotify.SpotifyUtils;
 import com.diploma.timer.SessionOptionsAdapter;
 import com.diploma.timer.SessionsSettingsService;
 import com.diploma.timer.TimerService;
@@ -150,8 +151,7 @@ public class MainTabFragment extends Fragment {
 
         videosSettingDialog.setOnDismissListener(v -> {
             if (videoSettingsService.isActiveSettingPresent()) {
-                String videoId = VideoSettingsService.getInstance()
-                        .getActiveSetting().getVideoId();
+                String videoId = videoSettingsService.getActiveSetting().getVideoId();
                 videoChooserButton.setText(YoutubeUtils.getVideoTitle(videoId, 30));
                 youtubePlayerView.getYouTubePlayerWhenReady(youTubePlayer ->
                         youTubePlayer.cueVideo(videoId, 0));
@@ -170,8 +170,9 @@ public class MainTabFragment extends Fragment {
     public void createNewMusicDialog(View view) {
         dialogBuilder = new AlertDialog.Builder(view.getContext());
         final View musicChooserView = getLayoutInflater().inflate(R.layout.music_chooser_popup, null);
-
-        youtubePlayerView = view.getRootView().findViewById(R.id.activity_main_youtubePlayerView);
+        Button musicChooserButton = view.getRootView().findViewById(R.id.music_playlist_button);
+        final TextInputLayout editTextLayout = musicChooserView.findViewById(R.id.input_setting_layout);
+        final ImageButton saveSettingButton = musicChooserView.findViewById(R.id.save_streaming_option_button);
 
         dialogBuilder.setView(musicChooserView);
         musicsSettingDialog = dialogBuilder.create();
@@ -180,13 +181,24 @@ public class MainTabFragment extends Fragment {
 
         RecyclerView recyclerView = musicChooserView.findViewById(R.id.music_option_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-        MusicOptionsAdapter adapter = new MusicOptionsAdapter(musicsSettingsService);
+        MusicOptionsAdapter adapter = new MusicOptionsAdapter(musicsSettingsService, musicsSettingDialog);
         recyclerView.setAdapter(adapter);
 
-        musicsSettingDialog.setOnDismissListener(v ->
-                spotifyPlayerService.setPlaylistId(musicsSettingsService
-                        .getActiveSetting().getPlaylistId())
-        );
+        musicsSettingDialog.setOnDismissListener(v -> {
+            if (musicsSettingsService.isActiveSettingPresent()) {
+                String playlistTitle = SpotifyUtils.getPlaylistTitleFromId(
+                        musicsSettingsService.getActiveSetting().getPlaylistId(), 30);
+                musicChooserButton.setText(playlistTitle);
+            }
+        });
+
+        saveSettingButton.setOnClickListener(v -> {
+            String playlistId =  SpotifyUtils.getPlaylistIdFromUrl(
+                    Objects.requireNonNull(editTextLayout.getEditText()).getText().toString());
+            musicsSettingsService.addSetting(playlistId);
+            adapter.notifyDataSetChanged();
+            editTextLayout.getEditText().setText("");
+        });
     }
 
     public void createNewSessionSettingsDialog(View view) {

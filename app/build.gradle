@@ -1,6 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
+    packagingOptions {
+        pickFirst "META-INF/DEPENDENCIES"
+
+    }
     compileSdkVersion 32
     defaultConfig {
         manifestPlaceholders = [redirectSchemeName: "spotify-sdk", redirectHostName: "auth"]
@@ -52,4 +56,6 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
         exclude group: "com.google.guava"
     }
+
+    implementation 'se.michaelthelin.spotify:spotify-web-api-java:7.1.0'
 }

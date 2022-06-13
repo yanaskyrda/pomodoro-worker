@@ -5,6 +5,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import com.diploma.database.DatabaseHandler;
+import com.diploma.youtube.VideoSettingEntity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,9 +22,6 @@ public class MusicsSettingsService {
     private MusicsSettingsService() {
         musicSettingDataSet = new ArrayList<>();
         setSettingsDataSet(DatabaseHandler.getInstance(null).getAllMusicsSettings());
-        if (!musicSettingDataSet.isEmpty()) {
-            activeSetting = musicSettingDataSet.get(0);
-        }
     }
 
     public static MusicsSettingsService getInstance() {
@@ -39,6 +37,8 @@ public class MusicsSettingsService {
 
     public void setActiveSetting(MusicSettingEntity activeSetting) {
         this.activeSetting = activeSetting;
+        SpotifyPlayerService.getInstance(null, null)
+                .setPlaylistId(activeSetting.getPlaylistId());
     }
 
     public void setSettingsDataSet(List<MusicSettingEntity> settings) {
@@ -47,6 +47,15 @@ public class MusicsSettingsService {
 
     public void addSetting(MusicSettingEntity... settings) {
         musicSettingDataSet.addAll(Arrays.asList(settings));
+    }
+
+    public void addSetting(String playlistId) {
+        DatabaseHandler db = DatabaseHandler.getInstance(null);
+        db.addMusicSetting(playlistId);
+        MusicSettingEntity musicSetting = db.getAllMusicsSettings().stream()
+                .filter(s -> s.getPlaylistId().equals(playlistId))
+                .findFirst().get();
+        musicSettingDataSet.add(musicSetting);
     }
 
     public MusicSettingEntity getMusicSetting(int position) {
@@ -65,5 +74,9 @@ public class MusicsSettingsService {
             return 0;
         }
         return musicSettingDataSet.size();
+    }
+
+    public Boolean isActiveSettingPresent() {
+        return activeSetting != null;
     }
 }

@@ -5,6 +5,7 @@ buildscript {
         google()
         //noinspection JcenterRepositoryObsolete
         jcenter()
+        maven { url "https://jitpack.io" }
         
     }
     dependencies {
@@ -20,6 +21,7 @@ allprojects {
         google()
         //noinspection JcenterRepositoryObsolete
         jcenter()
+        maven { url "https://jitpack.io" }
         
     }
 }

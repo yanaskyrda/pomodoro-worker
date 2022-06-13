@@ -5,6 +5,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginBottom="5dp">
 
+    <include
+        layout="@layout/setting_input"
+        android:id="@+id/input_music_url_layout" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/music_option_recycler"
         android:layout_width="match_parent"
@@ -13,7 +17,7 @@
         android:layout_row="1"
         android:layout_rowWeight="1"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/input_music_url_layout">
 
     </androidx.recyclerview.widget.RecyclerView>
 

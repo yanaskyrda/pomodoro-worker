@@ -1,5 +1,6 @@
 package com.diploma.spotify;
 
+import android.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import com.diploma.youtube.VideoSettingsService;
 
 public class MusicOptionsAdapter extends RecyclerView.Adapter<MusicOptionsAdapter.ViewHolder> {
     MusicsSettingsService musicsSettingsService;
+    AlertDialog activeAlertDialog;
 
     /**
      * Provide a reference to the type of views that you are using
@@ -44,8 +46,9 @@ public class MusicOptionsAdapter extends RecyclerView.Adapter<MusicOptionsAdapte
      * @param service Music setting service that contain all video setting options
      * by RecyclerView.
      */
-    public MusicOptionsAdapter(MusicsSettingsService service) {
+    public MusicOptionsAdapter(MusicsSettingsService service, AlertDialog musicSettingsDialog) {
         musicsSettingsService = service;
+        activeAlertDialog = musicSettingsDialog;
     }
 
     // Create new views (invoked by the layout manager)
@@ -63,8 +66,12 @@ public class MusicOptionsAdapter extends RecyclerView.Adapter<MusicOptionsAdapte
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         viewHolder.getMusicOption()
-                .setText(musicsSettingsService.getMusicSetting(position).getPlaylistId()
-                        .substring(0, 30));
+                .setText(SpotifyUtils.getPlaylistTitleFromId(
+                        musicsSettingsService.getMusicSetting(position).getPlaylistId(), 30));
+        viewHolder.getMusicOption().setOnClickListener(v -> {
+            musicsSettingsService.setActiveSetting(musicsSettingsService.getMusicSetting(position));
+            dismissPopup();
+        });
         viewHolder.getDeleteMusicOption().setOnClickListener(v -> {
             musicsSettingsService.removeSetting(position);
             notifyItemRemoved(position);
@@ -79,5 +86,9 @@ public class MusicOptionsAdapter extends RecyclerView.Adapter<MusicOptionsAdapte
             return 0;
         }
         return musicsSettingsService.getDataSetSize();
+    }
+
+    private void dismissPopup() {
+        activeAlertDialog.dismiss();
     }
 }

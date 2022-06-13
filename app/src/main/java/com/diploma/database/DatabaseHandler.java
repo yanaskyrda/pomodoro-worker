@@ -128,7 +128,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("INSERT INTO " + TABLE_MUSICS + " (" +
                 PLAYLIST_ID + ", " +
                 DISTRACTIONS_RATE +
-                ") VALUES('spotify:playlist:37i9dQZF1DX9sIqqvKsjG8', 0)");
+                ") VALUES('37i9dQZF1DX9sIqqvKsjG8', 0)");
     }
 
     @Override

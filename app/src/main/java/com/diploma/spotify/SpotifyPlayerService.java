@@ -16,12 +16,15 @@ import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.protocol.types.Track;
 
+import java.util.Objects;
+
 public class SpotifyPlayerService {
     private static SpotifyPlayerService instance;
 
     private SpotifyAppRemote spotifyAppRemote;
     private SpotifyPlayerState spotifyPlayerState = SpotifyPlayerState.UNKNOWN;
     private String playlistId;
+    private Boolean playlistChanged = false;
 
     private View view;
     ImageButton playSongButton;
@@ -58,7 +61,18 @@ public class SpotifyPlayerService {
     }
 
     public void setPlaylistId(String playlistId) {
-        this.playlistId = playlistId;
+        if (!Objects.equals(this.playlistId, playlistId)) {
+            this.playlistId = playlistId;
+            if (this.spotifyPlayerState.equals(SpotifyPlayerState.PLAYING)) {
+                playPlaylist();
+            } else {
+                if (!this.spotifyPlayerState.equals(SpotifyPlayerState.INITIALIZED)) {
+                    playlistChanged = true;
+                    TextView currentSongTitle = view.findViewById(R.id.current_song);
+                    currentSongTitle.setText("");
+                }
+            }
+        }
     }
 
     protected void connectSpotifyRemoteApp(@NonNull Context context) {
@@ -91,7 +105,8 @@ public class SpotifyPlayerService {
 
     private void playPlaylist() {
         if (playlistId != null) {
-            spotifyAppRemote.getPlayerApi().play(playlistId);
+            playlistChanged = false;
+            spotifyAppRemote.getPlayerApi().play("spotify:playlist:" + playlistId);
             setTrackTitle();
         }
     }
@@ -124,7 +139,12 @@ public class SpotifyPlayerService {
                 break;
             case PAUSED:
                 if (isReadyToPlay()) {
-                    spotifyAppRemote.getPlayerApi().resume();
+                    if (playlistChanged) {
+                        playPlaylist();
+                        playlistChanged = false;
+                    } else {
+                        spotifyAppRemote.getPlayerApi().resume();
+                    }
                     playSongButton.setImageResource(R.drawable.pause_button);
                     spotifyPlayerState = SpotifyPlayerState.PLAYING;
                 }
@@ -144,18 +164,23 @@ public class SpotifyPlayerService {
             if (spotifyPlayerState.equals(SpotifyPlayerState.INITIALIZED)) {
                 playPlaylist();
             } else if (spotifyPlayerState.equals(SpotifyPlayerState.PAUSED)) {
-                spotifyAppRemote.getPlayerApi().resume();
+                if (playlistChanged) {
+                    playPlaylist();
+                    playlistChanged = false;
+                } else {
+                    spotifyAppRemote.getPlayerApi().resume();
+                }
             }
-            playSongButton.setImageResource(R.drawable.pause_button);
             spotifyPlayerState = SpotifyPlayerState.PLAYING;
+            playSongButton.setImageResource(R.drawable.pause_button);
         }
     }
 
     public void forceStop() {
         if (spotifyPlayerState.equals(SpotifyPlayerState.PLAYING)) {
+            spotifyPlayerState = SpotifyPlayerState.PAUSED;
             spotifyAppRemote.getPlayerApi().pause();
             playSongButton.setImageResource(R.drawable.play_button);
-            spotifyPlayerState = SpotifyPlayerState.PAUSED;
         }
     }
 
