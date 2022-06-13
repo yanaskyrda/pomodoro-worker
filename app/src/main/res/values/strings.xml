@@ -7,6 +7,11 @@
     <string name="Main">Main</string>
     <string name="current_song_title">%1$s - %2$s</string>
     <string name="hide_youtube">Hide Youtube</string>
+    <string name="expand_youtube">Expand Youtube</string>
+    <string name="choose_video">Select Video</string>
+    <string name="choose_playlist">Select Music</string>
+    <string name="start_session">Start Session</string>
+    <string name="null_time">00:00:00</string>
 
     <string-array name="tab_titles">
         <item>@string/Video</item>

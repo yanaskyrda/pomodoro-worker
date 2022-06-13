@@ -90,6 +90,17 @@ public class MainTabFragment extends Fragment {
 
         final ImageButton openSessionSetting = view.findViewById(R.id.sessions_settings_button);
         openSessionSetting.setOnClickListener(this::createNewSessionSettingsDialog);
+
+        final Button expandYoutubeButton = view.findViewById(R.id.expand_youtube_button);
+        expandYoutubeButton.setOnClickListener(v -> {
+            Button videoChooserButton = view.getRootView().findViewById(R.id.video_playlist_button);
+            ImageButton expandYoutubeIcon = view.findViewById(R.id.expand_youtube_icon);
+
+            videoChooserButton.setVisibility(View.VISIBLE);
+            youtubePlayerView.setVisibility(View.VISIBLE);
+            expandYoutubeButton.setVisibility(View.INVISIBLE);
+            expandYoutubeIcon.setVisibility(View.INVISIBLE);
+        });
     }
 
     private void connectYoutube(@NonNull View view) {
@@ -108,7 +119,7 @@ public class MainTabFragment extends Fragment {
         final View videoChooserView = getLayoutInflater().inflate(R.layout.video_chooser_popup, null);
 
 //        final EditText editTextId = videoChooserView.findViewById(R.id.youtube_video_input);
-        final Button closeButton = videoChooserView.findViewById(R.id.close_video_chooser);
+        final Button hideYoutubeButton = videoChooserView.findViewById(R.id.hide_youtube_button);
         youtubePlayerView = view.getRootView().findViewById(R.id.activity_main_youtubePlayerView);
         Button videoChooserButton = view.getRootView().findViewById(R.id.video_playlist_button);
         //getLifecycle().addObserver(youtubePlayerView);
@@ -123,28 +134,32 @@ public class MainTabFragment extends Fragment {
         VideoOptionsAdapter adapter = new VideoOptionsAdapter(videoSettingsService);
         recyclerView.setAdapter(adapter);
 
-        closeButton.setOnClickListener(v -> {
-            String videoId = VideoSettingsService.getInstance()
-                    .getActiveSetting().getVideoId();//"9jRGR8n0a68";
-            videoChooserButton.setText(YoutubeUtils.getVideoTitle(videoId));
-            youtubePlayerView.getYouTubePlayerWhenReady(youTubePlayer ->
-                    youTubePlayer.cueVideo(videoId, 0));
+        hideYoutubeButton.setOnClickListener(v -> {
+            Button expandYoutubeButton = view.getRootView().findViewById(R.id.expand_youtube_button);
+            ImageButton expandYoutubeIcon = view.getRootView().findViewById(R.id.expand_youtube_icon);
 
+            videoChooserButton.setVisibility(View.INVISIBLE);
+            youtubePlayerView.setVisibility(View.INVISIBLE);
+            expandYoutubeButton.setVisibility(View.VISIBLE);
+            expandYoutubeIcon.setVisibility(View.VISIBLE);
             videosSettingDialog.dismiss();
         });
 
-        videosSettingDialog.setOnDismissListener(v -> youtubePlayerView
-                .getYouTubePlayerWhenReady(youTubePlayer -> youTubePlayer
-                        .cueVideo(VideoSettingsService.getInstance()
-                                .getActiveSetting().getVideoId(), 0)
-                ));
+        videosSettingDialog.setOnDismissListener(v -> {
+            if (videoSettingsService.isActiveSettingPresent()) {
+                String videoId = VideoSettingsService.getInstance()
+                        .getActiveSetting().getVideoId();
+                videoChooserButton.setText(YoutubeUtils.getVideoTitle(videoId));
+                youtubePlayerView.getYouTubePlayerWhenReady(youTubePlayer ->
+                        youTubePlayer.cueVideo(videoId, 0));
+            }
+        });
     }
 
     public void createNewMusicDialog(View view) {
         dialogBuilder = new AlertDialog.Builder(view.getContext());
         final View musicChooserView = getLayoutInflater().inflate(R.layout.music_chooser_popup, null);
 
-        final Button closeButton = musicChooserView.findViewById(R.id.close_music_chooser);
         youtubePlayerView = view.getRootView().findViewById(R.id.activity_main_youtubePlayerView);
 
         dialogBuilder.setView(musicChooserView);
@@ -157,12 +172,6 @@ public class MainTabFragment extends Fragment {
         MusicOptionsAdapter adapter = new MusicOptionsAdapter(musicsSettingsService);
         recyclerView.setAdapter(adapter);
 
-        closeButton.setOnClickListener(v -> {
-            spotifyPlayerService.setPlaylistId(musicsSettingsService
-                    .getActiveSetting().getPlaylistId());
-            musicsSettingDialog.dismiss();
-        });
-
         musicsSettingDialog.setOnDismissListener(v ->
                 spotifyPlayerService.setPlaylistId(musicsSettingsService
                         .getActiveSetting().getPlaylistId())
@@ -173,8 +182,6 @@ public class MainTabFragment extends Fragment {
         dialogBuilder = new AlertDialog.Builder(view.getContext());
         final View sessionSettingsView = getLayoutInflater().inflate(R.layout.session_setting_popup, null);
 
-        final Button closeButton = sessionSettingsView.findViewById(R.id.close_session_setting);
-
         dialogBuilder.setView(sessionSettingsView);
         sessionSettingDialog = dialogBuilder.create();
         sessionSettingDialog.show();
@@ -183,7 +190,5 @@ public class MainTabFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         SessionOptionsAdapter adapter = new SessionOptionsAdapter(sessionsSettingsService);
         recyclerView.setAdapter(adapter);
-
-        closeButton.setOnClickListener(v -> sessionSettingDialog.dismiss());
     }
 }

@@ -54,6 +54,10 @@ public class VideoSettingsService {
         return activeSetting;
     }
 
+    public Boolean isActiveSettingPresent() {
+        return activeSetting != null;
+    }
+
     public void setActiveSetting(VideoSettingEntity activeSetting) {
         this.activeSetting = activeSetting;
     }
